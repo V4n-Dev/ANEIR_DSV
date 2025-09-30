@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Trámite — Registro de empresa (RNC) | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== Tokens coherentes con tu sistema ===== */
+  :root{
+    --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+    --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+    --color-surface:#ffffff; --color-border:#d1d5db;
+    --ok:#16a34a; --warn:#f59e0b; --err:#b91c1c; --info:#0ea5e9;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+  a{text-decoration:none;color:var(--color-primary)}
+  h1,h2{color:var(--color-institutional)}
+  .muted{color:var(--color-muted)}
+
+  /* Topbar */
+  .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* Main */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+
+  /* Breadcrumb APG */
+  .breadcrumb{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem;font-size:.9rem}
+  .breadcrumb .sep{opacity:.6}
+
+  /* Header del trámite */
+  .header{display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:.75rem}
+  .pill{display:inline-flex;align-items:center;gap:.4rem;border-radius:9999px;padding:.2rem .6rem;font-weight:700}
+  .pill.info{background:#e0f2fe;color:#075985}
+  .pill.warn{background:#fffbeb;color:#92400e}
+  .pill.ok{background:#dcfce7;color:#166534}
+  .kv{display:flex;gap:1rem;flex-wrap:wrap}
+  .kv div{background:#f8fafc;border:1px solid var(--color-border);border-radius:.6rem;padding:.35rem .6rem}
+
+  /* Layout */
+  .content{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:1100px){ .content{grid-template-columns:2fr 1fr} }
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+  .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+  .card-body{padding:1rem}
+  .aside{position:sticky;top:4.5rem;display:grid;gap:1rem;height:fit-content}
+
+  /* Timeline (con <time datetime>) */
+  .timeline{display:grid;gap:.9rem;border-left:2px solid #e5e7eb;padding-left:1rem;margin-left:.35rem}
+  .tl{position:relative}
+  .tl::before{content:"";position:absolute;left:-1.2rem;top:.2rem;width:.75rem;height:.75rem;border-radius:9999px;background:var(--info);outline:3px solid #fff;box-shadow:0 0 0 2px #e5e7eb}
+  .tl.ok::before{background:var(--ok)}
+  .tl.warn::before{background:var(--warn)}
+  .tl.err::before{background:var(--err)}
+  .tl header{display:flex;gap:.5rem;align-items:baseline}
+  .tl time{font-size:.85rem;color:var(--color-muted)}
+
+  /* Task list (checklist) */
+  .task-list{list-style:none;padding:0;margin:0}
+  .task{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--color-border);border-radius:.6rem;padding:.6rem .75rem;margin-bottom:.5rem;background:#fff}
+  .status{font-weight:700}
+  .status.ok{color:var(--ok)} .status.warn{color:var(--warn)} .status.err{color:var(--err)}
+
+  /* Tabla simple */
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:.6rem;border-bottom:1px solid var(--color-border);text-align:left}
+  thead th{position:sticky;top:0;background:#f8fafc;z-index:1}
+
+  /* Mensajería */
+  .msg{display:grid;gap:.35rem;border:1px solid var(--color-border);border-radius:.6rem;padding:.6rem;background:#fff}
+  .msg.you{border-left:4px solid var(--color-primary)}
+  .msg.agency{border-left:4px solid var(--color-institutional)}
+  .msg header{display:flex;justify-content:space-between}
+
+  /* Botones */
+  .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.55rem .9rem;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+  .ghost{background:transparent;border:1px solid var(--color-border)}
+  .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Breadcrumb (APG) -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Inicio</a>
+      <span class="sep">/</span>
+      <a href="tramites.html">Trámites</a>
+      <span class="sep">/</span>
+      <span aria-current="page">Registro de empresa (RNC)</span>
+    </nav>
+
+    <!-- Encabezado del trámite -->
+    <header class="header" aria-labelledby="title">
+      <div>
+        <h1 id="title">Registro de empresa (RNC)</h1>
+        <p class="muted">Folio <b>RNC-2025-0187</b> · Última actualización <time datetime="2025-09-20">20 Sep 2025</time></p>
+      </div>
+      <span class="pill warn" title="Estado actual">● En revisión</span>
+      <div class="kv" aria-label="Resumen rápido">
+        <div><b>Inicio:</b> <time datetime="2025-09-01T10:22-04:00">01 Sep, 10:22</time></div>
+        <div><b>Tipo:</b> Registro</div>
+        <div><b>Responsable:</b> María López</div>
+      </div>
+    </header>
+
+    <section class="content">
+      <article>
+        <!-- Línea de tiempo -->
+        <div class="card" aria-labelledby="tl-title">
+          <div class="card-header" id="tl-title">Línea de tiempo</div>
+          <div class="card-body">
+            <div class="timeline" aria-label="Eventos del trámite">
+              <div class="tl ok">
+                <header>
+                  <strong>Enviado</strong>
+                  <time datetime="2025-09-01T10:22-04:00">01 Sep 2025, 10:22</time>
+                </header>
+                <div class="muted">Recibimos tu solicitud y documentos.</div>
+              </div>
+
+              <div class="tl warn">
+                <header>
+                  <strong>En revisión</strong>
+                  <time datetime="2025-09-05T16:10-04:00">05 Sep 2025, 16:10</time>
+                </header>
+                <div class="muted">Analizando requisitos. Tiempo estimado: 5–7 días hábiles.</div>
+              </div>
+
+              <div class="tl err">
+                <header>
+                  <strong>Observado</strong>
+                  <time datetime="2025-09-12T09:05-04:00">12 Sep 2025, 09:05</time>
+                </header>
+                <div class="muted">Falta constancia bancaria vigente. Re-subir documento.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Checklist (task list) -->
+        <div class="card" aria-labelledby="tk-title" style="margin-top:1rem">
+          <div class="card-header" id="tk-title">Checklist de requisitos</div>
+          <div class="card-body">
+            <ul class="task-list">
+              <li class="task"><span>Formulario ANEIR-01</span><span class="status ok">Completado</span></li>
+              <li class="task"><span>Documento de identidad</span><span class="status ok">Completado</span></li>
+              <li class="task"><span>Constancia bancaria (≤ 30 días)</span><span class="status err">Observado</span></li>
+              <li class="task"><span>Pago de tasa</span><span class="status warn">Pendiente</span></li>
+            </ul>
+            <div style="margin-top:.6rem;display:flex;gap:.5rem;flex-wrap:wrap">
+              <a class="btn" href="#docs">Ir a documentos</a>
+              <a class="btn btn-primary" href="#mensajes">Contactar mesa de partes</a>
+            </div>
+            <p class="muted" style="margin-top:.35rem">Las listas de tareas ayudan a ver de un vistazo qué falta y qué está listo. (Patrón “task list”). :contentReference[oaicite:4]{index=4}</p>
+          </div>
+        </div>
+
+        <!-- Documentos -->
+        <div class="card" aria-labelledby="docs" style="margin-top:1rem">
+          <div class="card-header" id="docs">Documentos</div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Documento</th><th>Tipo</th><th>Estado</th><th>Actualizado</th><th>Acción</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Constancia bancaria</td><td>PDF</td><td>Observado</td>
+                  <td><time datetime="2025-09-12">12 Sep 2025</time></td>
+                  <td><a class="btn" href="#">Reemplazar (demo)</a></td>
+                </tr>
+                <tr>
+                  <td>Documento identidad</td><td>JPG</td><td>Aprobado</td>
+                  <td><time datetime="2025-09-05">05 Sep 2025</time></td>
+                  <td><a class="btn" href="#">Ver</a></td>
+                </tr>
+                <tr>
+                  <td>Formulario ANEIR-01</td><td>PDF</td><td>Aprobado</td>
+                  <td><time datetime="2025-09-01">01 Sep 2025</time></td>
+                  <td><a class="btn" href="#">Ver</a></td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="muted" style="margin-top:.35rem">Al subir archivos, usa etiquetas asociadas al control de archivo y déjalo funcional si el JS no carga (progresivo). :contentReference[oaicite:5]{index=5}</p>
+          </div>
+        </div>
+
+        <!-- Mensajes -->
+        <div class="card" aria-labelledby="mensajes" style="margin-top:1rem">
+          <div class="card-header" id="mensajes">Mensajería</div>
+          <div class="card-body" style="display:grid;gap:.6rem">
+            <div class="msg agency">
+              <header>
+                <strong>Mesa de partes</strong>
+                <time datetime="2025-09-12T09:05-04:00" class="muted">12 Sep 2025, 09:05</time>
+              </header>
+              <p>Por favor adjunta constancia bancaria con fecha de emisión ≤ 30 días.</p>
+            </div>
+            <div class="msg you">
+              <header>
+                <strong>Tú</strong>
+                <time datetime="2025-09-12T12:18-04:00" class="muted">12 Sep 2025, 12:18</time>
+              </header>
+              <p>Entendido. Subo la versión actualizada hoy.</p>
+            </div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <a class="btn ghost" href="#">Nueva nota (demo)</a>
+              <a class="btn btn-primary" href="#">Enviar mensaje (demo)</a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Aside -->
+      <aside class="aside">
+        <div class="card">
+          <div class="card-header">Resumen rápido</div>
+          <div class="card-body">
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <span class="chip">Folio: RNC-2025-0187</span>
+              <span class="chip">Estado: En revisión</span>
+              <span class="chip">Tipo: Registro</span>
+            </div>
+            <div style="margin-top:.6rem;display:flex;gap:.5rem;flex-wrap:wrap">
+              <a class="btn" href="tramites.html">← Volver a Trámites</a>
+              <a class="btn btn-primary" href="#docs">Subir/Ver docs</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">SLA / Fechas</div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Hito</th><th>Fecha</th></tr></thead>
+              <tbody>
+                <tr><td>Recepción</td><td><time datetime="2025-09-01">01 Sep 2025</time></td></tr>
+                <tr><td>Observación</td><td><time datetime="2025-09-12">12 Sep 2025</time></td></tr>
+                <tr><td>Próxima revisión</td><td><time datetime="2025-09-26">26 Sep 2025</time></td></tr>
+              </tbody>
+            </table>
+            <p class="muted" style="margin-top:.35rem">Usar el elemento <code>&lt;time datetime&gt;</code> facilita comprensión por lectores y máquinas. :contentReference[oaicite:6]{index=6}</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academia & Mentoría | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --color-primary: #2563eb;
+    --color-accent: #14b8a6;
+    --color-institutional: #1e3a8a;
+    --color-text-dark: #1f2937;
+    --color-background-light: #e5e7eb;
+    --color-white: #ffffff;
+    --color-gray-border: #d1d5db;
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --spacing-unit: 1rem;
+    --color-primary:#1f4fd6;
+    --color-accent:#14b8a6;
+    --color-institutional:#132e80;
+    --color-text-dark:#1f2937;
+    --color-text-muted:#4b5563;
+    --color-surface:#ffffff;
+    --color-surface-subtle:#f8fafc;
+    --color-background:#e5e7eb;
+    --color-border:#d1d5db;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family: 'Inter', sans-serif;
+    color: var(--color-text-dark);
+    background-color: var(--color-white);
+    line-height: 1.6;
+  }
+  a{  text-decoration: none;
+      color: var(--color-primary);
+  }
+  h1,h2{color:var(--color-institutional)}
+  .muted{color:var(--color-text-muted)}
+
+
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid  var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text-dark)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+
+  .tabs{
+    position:sticky; top:4.25rem; z-index:10;
+    display:flex; gap:.25rem; overflow-x:auto;
+    background:var(--color-surface); border:1px solid var(--color-border);
+    border-radius:.75rem; padding:.25rem; box-shadow:var(--shadow-md);
+  }
+  .tab{
+    appearance:none; border:1px solid transparent; background:transparent;
+    color:var(--color-institutional); font-weight:700; cursor:pointer;
+    padding:.6rem .9rem; border-radius:.6rem; white-space:nowrap;
+  }
+  .tab:is(:hover,:focus-visible){ background:var(--color-surface-subtle); outline:none; }
+  .tab.is-active{ background:var(--color-primary); color:#fff; border-color:var(--color-primary) }
+  .panel[hidden]{display:none}
+
+  /* Filtros */
+  .filters{background:var(--color-surface);border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin:1rem 0}
+  .filters-grid{display:grid;gap:.75rem;grid-template-columns:1fr}
+  .field{display:flex;flex-direction:column}
+  .field label{font-weight:600;font-size:.9rem;margin-bottom:.35rem}
+  .input, select{border:1px solid var(--color-border);border-radius:.5rem;padding:.6rem;background:#fff}
+  .row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+  .chip{background:var(--color-background);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+  .btn-primary{background:var(--color-primary);color:#fff;border:0;border-radius:.5rem;padding:.6rem 1rem;font-weight:700;cursor:pointer}
+  .ghost{background:transparent;border:1px solid var(--color-border);border-radius:.5rem;padding:.5rem .9rem;font-weight:600;cursor:pointer}
+
+  @media(min-width:900px){ .filters-grid{grid-template-columns:repeat(4,1fr)} }
+
+  .grid{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:768px){ .grid{grid-template-columns:repeat(2,1fr)} }
+  @media(min-width:1200px){ .grid{grid-template-columns:repeat(3,1fr)} }
+
+
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);overflow:hidden;display:flex;flex-direction:column}
+  .media{height:120px;background:linear-gradient(90deg,#e5e7eb,#f3f4f6)}
+  .avatar{width:56px;height:56px;border-radius:9999px;background:#cbd5e1;border:2px solid #fff;margin-top:-28px}
+  .card-body{padding:1rem}
+  .card-head{display:flex;align-items:center;gap:.6rem}
+  .badge{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:9999px;padding:.18rem .5rem;font-size:.75rem;font-weight:700;margin-right:.35rem}
+  .meta{font-size:.9rem;color:var(--color-text-muted)}
+  .kpis{display:flex;gap:1rem;font-size:.9rem;margin:.5rem 0}
+  .actions{display:flex;justify-content:space-between;align-items:center;padding:0 1rem 1rem}
+  .cta{background:var(--color-accent);color:#fff;border:0;border-radius:.5rem;padding:.5rem .8rem;font-weight:700;cursor:pointer}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <main class="main">
+    <h1>Academia & Mentoría</h1>
+    <p class="muted">Encuentra mentores y cursos recomendados para tu etapa y sector.</p>
+
+    <nav class="tabs" role="tablist" aria-label="Contenido de Academia">
+      <button class="tab is-active" role="tab" aria-selected="true" aria-controls="p-mentores" id="t-mentores">Mentores</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-cursos" id="t-cursos">Cursos</button>
+    </nav>
+
+    <section id="p-mentores" class="panel" role="tabpanel" tabindex="0" aria-labelledby="t-mentores">
+      <!-- Filtros -->
+      <section class="filters" aria-label="Filtros de mentores">
+        <div class="filters-grid">
+          <div class="field">
+            <label for="q-mentores">Buscar</label>
+            <input id="q-mentores" class="input" placeholder="Nombre, experticia, institución… (demo estático)"/>
+          </div>
+          <div class="field">
+            <label for="sector-m">Sector</label>
+            <select id="sector-m">
+              <option>Todos</option><option>AgroTech</option><option>FinTech</option><option>HealthTech</option><option>EdTech</option><option>Energía</option><option>Turismo</option><option>Manufactura</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="etapa-m">Etapa</label>
+            <select id="etapa-m">
+              <option>Todas</option><option>Idea</option><option>MVP</option><option>Tracción</option><option>Crecimiento</option><option>Escalamiento</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tipo-m">Tipo</label>
+            <select id="tipo-m">
+              <option>Todos</option><option>Estrategia</option><option>Finanzas</option><option>Legal/Fiscal</option><option>Producto/Tech</option><option>GTM/Ventas</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <span class="chip">RD</span>
+          <span class="chip">B2B</span>
+          <button class="ghost" style="margin-left:auto">Limpiar</button>
+          <button class="btn-primary">Aplicar</button>
+        </div>
+      </section>
+
+      <section class="grid" aria-label="Resultados de mentores">
+        <article class="card" role="article">
+          <div class="media" role="img" aria-label="Portada mentor (mock)"></div>
+          <div class="card-body">
+            <div class="card-head">
+              <img class="avatar" alt="" />
+              <div>
+                <h3>Dr. Luis Pérez</h3>
+                <div class="meta">Estrategia & Operaciones — Ex-Consultor MBB</div>
+                <div style="margin:.25rem 0">
+                  <span class="badge">AgroTech</span>
+                  <span class="badge">MVP/Tracción</span>
+                </div>
+              </div>
+            </div>
+            <div class="kpis">
+              <span>Sesiones: 2h/sem</span>
+              <span>Valoración: ★ 4.8</span>
+            </div>
+            <p class="muted">Mentoría en foco de problema-solución, roadmaps y métricas de ejecución.</p>
+          </div>
+          <div class="actions">
+            <a class="ghost" href="mentor_detalle.html">Ver perfil</a>
+            <a class="cta" href="#">Solicitar mentoría</a>
+          </div>
+        </article>
+
+        <article class="card" role="article">
+          <div class="media"></div>
+          <div class="card-body">
+            <div class="card-head">
+              <img class="avatar" alt="" />
+              <div>
+                <h3>Ing. Ana Gómez</h3>
+                <div class="meta">Producto & UX — SaaS B2B</div>
+                <div style="margin:.25rem 0">
+                  <span class="badge">FinTech</span>
+                  <span class="badge">Idea/MVP</span>
+                </div>
+              </div>
+            </div>
+            <div class="kpis">
+              <span>Sesiones: 1h/sem</span>
+              <span>Valoración: ★ 4.7</span>
+            </div>
+            <p class="muted">Descubrimiento de usuarios, diseño de MVP y validación de hipótesis.</p>
+          </div>
+          <div class="actions">
+            <a class="ghost" href="mentor_detalle.html">Ver perfil</a>
+            <a class="cta" href="#">Solicitar mentoría</a>
+          </div>
+        </article>
+
+        <article class="card" role="article">
+          <div class="media"></div>
+          <div class="card-body">
+            <div class="card-head">
+              <img class="avatar" alt="" />
+              <div>
+                <h3>Lic. Carla Ruiz</h3>
+                <div class="meta">Legal & Fiscal — Formalización y propiedad intelectual</div>
+                <div style="margin:.25rem 0">
+                  <span class="badge">Multisector</span>
+                  <span class="badge">Crecimiento</span>
+                </div>
+              </div>
+            </div>
+            <div class="kpis">
+              <span>Sesiones: A demanda</span>
+              <span>Valoración: ★ 4.6</span>
+            </div>
+            <p class="muted">Registro, contratos, PI y cumplimiento; guía de ventanilla única.</p>
+          </div>
+          <div class="actions">
+            <a class="ghost" href="mentor_detalle.html">Ver perfil</a>
+            <a class="cta" href="#">Solicitar mentoría</a>
+          </div>
+        </article>
+      </section>
+    </section>
+
+    <section id="p-cursos" class="panel" role="tabpanel" tabindex="0" aria-labelledby="t-cursos" hidden>
+      <!-- Filtros -->
+      <section class="filters" aria-label="Filtros de cursos">
+        <div class="filters-grid">
+          <div class="field">
+            <label for="q-cursos">Buscar</label>
+            <input id="q-cursos" class="input" placeholder="Nombre, módulo, temática… (demo estático)"/>
+          </div>
+          <div class="field">
+            <label for="nivel-c">Nivel</label>
+            <select id="nivel-c">
+              <option>Todos</option><option>Básico</option><option>Intermedio</option><option>Avanzado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="duracion-c">Duración</label>
+            <select id="duracion-c">
+              <option>Cualquiera</option><option>≤ 2h</option><option>2–6h</option><option>≥ 6h</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tema-c">Tema</label>
+            <select id="tema-c">
+              <option>Todos</option><option>Validación</option><option>Finanzas</option><option>Legal</option><option>Producto</option><option>Ventas</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <span class="chip">Certificables</span>
+          <span class="chip">Gratis</span>
+          <button class="ghost" style="margin-left:auto">Limpiar</button>
+          <button class="btn-primary">Aplicar</button>
+        </div>
+      </section>
+
+      <!-- Grid de cursos -->
+      <section class="grid" aria-label="Resultados de cursos">
+        <!-- Curso 1 -->
+        <article class="card">
+          <div class="media" role="img" aria-label="Cover Curso MVP (mock)"></div>
+          <div class="card-body">
+            <div class="card-head" style="justify-content:space-between;width:100%">
+              <div style="display:flex;align-items:center;gap:.6rem">
+                <div class="avatar" style="margin-top:0"></div>
+                <div>
+                  <h3>Diseño de MVP en 4 semanas</h3>
+                  <div class="meta">Nivel: Intermedio — Certificable</div>
+                </div>
+              </div>
+              <span class="badge">Gratis</span>
+            </div>
+            <div class="kpis">
+              <span>Duración: 6h</span>
+              <span>Formato: Video + Plantillas</span>
+            </div>
+            <p class="muted">Framework paso a paso para llevar tu idea a un prototipo testeable.</p>
+          </div>
+          <div class="actions">
+            <a class="ghost" href="curso_detalle.html">Ver temario</a>
+            <a class="cta" href="#">Empezar</a>
+          </div>
+        </article>
+
+        <!-- Curso 2 -->
+        <article class="card">
+          <div class="media"></div>
+          <div class="card-body">
+            <div class="card-head" style="justify-content:space-between;width:100%">
+              <div style="display:flex;align-items:center;gap:.6rem">
+                <div class="avatar" style="margin-top:0"></div>
+                <div>
+                  <h3>Finanzas para Startups</h3>
+                  <div class="meta">Nivel: Básico — Certificable</div>
+                </div>
+              </div>
+              <span class="badge">Pago</span>
+            </div>
+            <div class="kpis">
+              <span>Duración: 4h</span>
+              <span>Formato: Video + Docs</span>
+            </div>
+            <p class="muted">KPIs clave, CAC/LTV y métricas para inversionistas.</p>
+          </div>
+          <div class="actions">
+            <a class="ghost" href="curso_detalle.html">Ver temario</a>
+            <a class="cta" href="#">Comprar</a>
+          </div>
+        </article>
+
+        <!-- Curso 3 -->
+        <article class="card">
+          <div class="media"></div>
+          <div class="card-body">
+            <div class="card-head" style="justify-content:space-between;width:100%">
+              <div style="display:flex;align-items:center;gap:.6rem">
+                <div class="avatar" style="margin-top:0"></div>
+                <div>
+                  <h3>Go-to-Market para B2B</h3>
+                  <div class="meta">Nivel: Avanzado — Certificable</div>
+                </div>
+              </div>
+              <span class="badge">Pago</span>
+            </div>
+            <div class="kpis">
+              <span>Duración: 8h</span>
+              <span>Formato: Workshop</span>
+            </div>
+            <p class="muted">Estrategias de adquisición, pricing y playbooks de ventas.</p>
+          </div>
+          <div class="actions">
+            <a class="ghost" href="curso_detalle.html">Ver temario</a>
+            <a class="cta" href="#">Comprar</a>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const tabs = Array.from(document.querySelectorAll('.tabs .tab'));
+      const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+      function activate(i,{focus=false}={}){
+        tabs.forEach((t,idx)=>{ const active=idx===i;
+          t.classList.toggle('is-active',active);
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+          panels[idx].hidden = !active;
+          if(active && focus) t.focus();
+        });
+      }
+      tabs.forEach((t,i)=>{
+        t.addEventListener('click',()=>activate(i));
+        t.addEventListener('keydown',(e)=>{
+          let idx=tabs.indexOf(document.activeElement);
+          if(e.key==='ArrowRight'){e.preventDefault();idx=(idx+1)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='ArrowLeft'){e.preventDefault();idx=(idx-1+tabs.length)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='Home'){e.preventDefault();tabs[0].focus();}
+          else if(e.key==='End'){e.preventDefault();tabs[tabs.length-1].focus();}
+          else if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(idx);}
+        });
+      });
+      activate(0);
+    })();
+  </script>
+</body>
+</html>

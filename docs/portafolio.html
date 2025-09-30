@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Portafolio — Inversiones | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== Tokens coherentes ===== */
+  :root{
+    --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+    --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+    --color-surface:#ffffff; --color-border:#d1d5db;
+    --ok:#16a34a; --warn:#f59e0b; --err:#b91c1c; --info:#0ea5e9;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+  a{text-decoration:none;color:var(--color-primary)}
+  h1,h2{color:var(--color-institutional)}
+  .muted{color:var(--color-muted)}
+
+  /* Topbar */
+  .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* Main */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+  .breadcrumb{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem;font-size:.9rem}
+  .breadcrumb .sep{opacity:.6}
+
+  /* KPIs */
+  .kpis{display:grid;gap:.75rem;grid-template-columns:1fr}
+  @media(min-width:900px){ .kpis{grid-template-columns:repeat(4,1fr)} }
+  .kpi{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem}
+  .kpi h3{font-size:.9rem;color:var(--color-muted);font-weight:700}
+  .kpi .val{font-size:1.8rem;font-weight:800;margin-top:.25rem}
+  .kpi .sub{font-size:.85rem;color:var(--color-muted)}
+
+  /* Cards y tablas */
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+  .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+  .card-body{padding:1rem}
+  .content{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:1100px){ .content{grid-template-columns:2fr 1fr} }
+
+  .table-wrap{max-height:60vh;overflow:auto;border:1px solid var(--color-border);border-radius:.75rem;background:#fff;box-shadow:var(--shadow-md); width: 850px;}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  caption{caption-side:top;text-align:left;padding:.75rem;border-bottom:1px solid var(--color-border);font-weight:700;color:var(--color-institutional)}
+  thead th{position:sticky;top:0;background:#f8fafc;border-bottom:1px solid var(--color-border);z-index:1}
+  th,td{padding:.6rem;text-align:left;border-bottom:1px solid var(--color-border)}
+  tr:hover td{background:#fafafa}
+  .mono{font-variant-numeric:tabular-nums}
+  .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+
+  /* Badges */
+  .pill{display:inline-flex;align-items:center;gap:.4rem;border-radius:9999px;padding:.2rem .6rem;font-weight:700}
+  .pill.ok{background:#dcfce7;color:#166534}
+  .pill.warn{background:#fffbeb;color:#92400e}
+  .pill.info{background:#e0f2fe;color:#075985}
+
+  /* Botones */
+  .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.55rem .9rem;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+  .ghost{background:transparent;border:1px solid var(--color-border)}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Inicio</a>
+      <span class="sep">/</span>
+      <span aria-current="page">Portafolio</span>
+    </nav>
+
+    <header style="margin-bottom:.75rem">
+      <h1>Portafolio — Inversiones</h1>
+    </header>
+
+    <!-- KPIs -->
+    <section class="kpis" aria-label="Indicadores clave">
+      <div class="kpi">
+        <h3>TVPI</h3>
+        <div class="val mono">1.72×</div>
+        <div class="sub">Valor total / capital aportado (neto). :contentReference[oaicite:7]{index=7}</div>
+      </div>
+      <div class="kpi">
+        <h3>DPI</h3>
+        <div class="val mono">0.58×</div>
+        <div class="sub">Distribuido / capital aportado. :contentReference[oaicite:8]{index=8}</div>
+      </div>
+      <div class="kpi">
+        <h3>IRR (neto)</h3>
+        <div class="val mono">18.4%</div>
+        <div class="sub">Tasa interna de retorno desde inicio. :contentReference[oaicite:9]{index=9}</div>
+      </div>
+      <div class="kpi">
+        <h3>RVPI</h3>
+        <div class="val mono">1.14×</div>
+        <div class="sub">Valor residual / capital aportado. (TVPI − DPI). :contentReference[oaicite:10]{index=10}</div>
+      </div>
+    </section>
+
+    <section class="content" style="margin-top:1rem">
+      <!-- Tabla de posiciones -->
+      <article class="table-wrap" role="region" aria-label="Detalle de inversiones" tabindex="0">
+        <table aria-describedby="cap-tabla">
+          <caption id="cap-tabla">Inversiones del portafolio</caption>
+          <thead>
+            <tr>
+              <th scope="col">Startup</th>
+              <th scope="col">Sector</th>
+              <th scope="col">Ronda</th>
+              <th scope="col">Fecha inversión</th>
+              <th scope="col">Aportado (US$)</th>
+              <th scope="col">Valor actual (US$)</th>
+              <th scope="col">Múltiplo</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"><a href="startup_perfil.html">AgroIA SRL</a></th>
+              <td>AgroTech</td>
+              <td>Seed</td>
+              <td><time datetime="2024-04-15">15 Abr 2024</time></td>
+              <td class="mono">120,000</td>
+              <td class="mono">240,000</td>
+              <td class="mono">2.00×</td>
+              <td><span class="pill ok">Activa</span></td>
+              <td><a class="btn" href="evaluador_detalle.html">Ver</a></td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="startup_perfil.html">FinPay</a></th>
+              <td>FinTech</td>
+              <td>Seed</td>
+              <td><time datetime="2024-08-10">10 Ago 2024</time></td>
+              <td class="mono">180,000</td>
+              <td class="mono">198,000</td>
+              <td class="mono">1.10×</td>
+              <td><span class="pill info">Activa</span></td>
+              <td><a class="btn" href="evaluador_detalle.html">Ver</a></td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="startup_perfil.html">Salud+</a></th>
+              <td>HealthTech</td>
+              <td>Pre-Seed</td>
+              <td><time datetime="2025-02-02">02 Feb 2025</time></td>
+              <td class="mono">75,000</td>
+              <td class="mono">45,000</td>
+              <td class="mono">0.60×</td>
+              <td><span class="pill warn">Seguimiento</span></td>
+              <td><a class="btn" href="evaluador_detalle.html">Ver</a></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" colspan="4">Totales</th>
+              <td class="mono"><b>375,000</b></td>
+              <td class="mono"><b>483,000</b></td>
+              <td class="mono"><b>1.29×</b></td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </article>
+
+      <!-- Aside: flujo de caja & notas -->
+      <aside class="card" style="height:fit-content">
+        <div class="card-header">Flujo de caja (resumen)</div>
+        <div class="card-body">
+          <div style="display:grid;gap:.5rem">
+            <div class="chip"><b>Aportado (Paid-In):</b> US$ 375,000</div>
+            <div class="chip"><b>Distribuciones (DPI):</b> US$ 220,000</div>
+            <div class="chip"><b>Valor residual (NAV):</b> US$ 418,000</div>
+            <div class="chip"><b>TVPI:</b> 1.72×</div>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem">
+            <a class="btn" href="reportes.html">Ver reportes</a>
+            <a class="btn btn-primary" href="#">Exportar CSV (demo)</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

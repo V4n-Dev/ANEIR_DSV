@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Perfil Inversionista | ANEIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Tokens coherentes con el set inversionista ===== */
+    :root{
+      --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+      --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+      --color-surface:#ffffff; --color-border:#d1d5db;
+      --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6}
+
+    a{text-decoration:none;color:var(--color-primary)}
+    h1,h2{color:var(--color-institutional)}
+
+    /* ===== Topbar (manual) ===== */
+    .topbar{position:fixed;top:0;left:0;right:0;height:56px;background:var(--color-surface);
+      border-bottom:1px solid var(--color-border);box-shadow:var(--shadow-md);z-index:1000;
+      display:flex;align-items:center;justify-content:space-between;padding:0 .75rem}
+    .topbar-logo{font-weight:700;color:var(--color-institutional)}
+    .topbar-nav{display:flex;gap:1rem;align-items:center;overflow-x:auto}
+    .topbar-nav a{color:var(--color-text);padding:.35rem .5rem;border-radius:.4rem;font-weight:600;white-space:nowrap}
+    .topbar-nav a.active,.topbar-nav a[aria-current="page"]{background:var(--color-primary);color:#fff}
+    .topbar-actions{display:flex;gap:.5rem}
+    .icon-btn{width:2rem;height:2rem;border-radius:9999px;background:var(--color-bg);display:grid;place-items:center}
+    .avatar{background:var(--color-institutional);color:#fff}
+
+    /* ===== Sidebar ===== */
+    .sidebar{position:fixed;top:56px;left:0;width:224px;height:calc(100vh - 56px);background:var(--color-surface);
+      border-right:1px solid var(--color-border);padding:1rem;overflow:auto;display:none}
+    .sidebar-nav{display:flex;flex-direction:column;gap:.25rem}
+    .sidebar-nav a{color:var(--color-text);padding:.5rem;border-radius:.5rem}
+    .sidebar-nav a.active{background:#eef2ff;color:#3730a3;font-weight:700}
+
+    /* ===== Main ===== */
+    .main{padding:5rem 1rem 2rem}
+    @media(min-width:768px){ .sidebar{display:block} .main{padding:5rem 2rem 2rem calc(224px + 2rem)} }
+
+    .muted{color:var(--color-muted)}
+    .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+
+    /* Hero Perfil */
+    .hero{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin-bottom:1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+    .ph-avatar{width:72px;height:72px;border-radius:9999px;background:#cbd5e1;display:grid;place-items:center;font-weight:700;color:#1f2937}
+    .hero-info{flex:1;min-width:240px}
+    .hero-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.55rem .9rem;font-weight:600;cursor:pointer}
+    .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .btn-ghost{background:transparent;border:1px solid var(--color-border)}
+
+    /* Layout columnas */
+    .content{display:grid;gap:1rem;grid-template-columns:1fr}
+    @media(min-width:1100px){ .content{grid-template-columns:2fr 1fr} }
+    .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+    .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+    .card-body{padding:1rem}
+    .list{display:grid;gap:.5rem}
+    .kpis{display:flex;gap:1rem;flex-wrap:wrap}
+    .kpi{background:#f8fafc;border:1px solid var(--color-border);border-radius:.6rem;padding:.5rem .75rem}
+
+    /* Tabs accesibles */
+    .tabs{position:sticky;top:4.25rem;z-index:5;display:flex;gap:.25rem;overflow-x:auto;background:#fff;border:1px solid var(--color-border);border-radius:.75rem;padding:.25rem;box-shadow:var(--shadow-md)}
+    .tab{appearance:none;border:1px solid transparent;background:transparent;color:var(--color-institutional);font-weight:700;cursor:pointer;padding:.6rem .9rem;border-radius:.6rem;white-space:nowrap}
+    .tab:is(:hover,:focus-visible){background:#f8fafc;outline:none}
+    .tab.is-active{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .panel[hidden]{display:none}
+
+    /* Table simple */
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    th,td{padding:.6rem;border-bottom:1px solid var(--color-border);text-align:left}
+    thead th{position:sticky;top:0;background:#f8fafc;z-index:1}
+
+    /* Bottom nav (móvil) */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--color-border);
+      display:flex;justify-content:space-around;padding:.5rem 0;z-index:999}
+    .nav-item{text-align:center;font-size:.8rem;color:var(--color-text)}
+    .nav-item-icon{display:block;font-size:1.2rem}
+    @media(min-width:768px){ .bottom-nav{display:none} }
+  </style>
+</head>
+<body>
+<!-- Topbar (único para TODAS las páginas del perfil inversionista) -->
+<header class="topbar" role="banner">
+  <div class="topbar-logo">
+    <a href="index.html" style="color:inherit">ANEIR</a>
+  </div>
+
+  <nav class="topbar-nav" aria-label="Principal">
+    <!-- Marca la página actual con class="active" -->
+    <a href="index.html" class="">Inicio</a>
+    <a href="marketplace.html" class="">Marketplace</a>
+    <a href="ayuda_faq.html" class="">Ayuda</a>
+  </nav>
+
+  <div class="topbar-actions">
+    <button class="icon-btn" aria-label="Notificaciones">🔔</button>
+    <!-- El avatar lleva al perfil; no hay item "Perfil" en el menú -->
+    <a class="icon-btn avatar" href="perfil.html" title="Perfil">A</a>
+  </div>
+</header>
+
+<!-- Sidebar (único para TODAS las páginas del perfil inversionista) -->
+<aside class="sidebar" aria-label="Secundaria">
+  <nav class="sidebar-nav">
+    <!-- Marca la página actual con class="active" -->
+    <a href="index.html" class="">Mi Panel</a>
+    <a href="marketplace.html" class="">Descubrir Startups</a>
+    <hr/>
+    <a href="ayuda_faq.html" class="">Ayuda / FAQ</a>
+  </nav>
+</aside>
+
+  <!-- Main -->
+  <main class="main" id="main">
+    <!-- Hero -->
+    <section class="hero" aria-label="Encabezado de perfil">
+      <div class="ph-avatar" aria-hidden="true">A</div>
+      <div class="hero-info">
+        <h1>Alex Martínez</h1>
+        <p class="muted">Inversionista ángel · Santo Domingo · <span class="chip">KYC: Verificado</span></p>
+        <div class="kpis" style="margin-top:.5rem">
+          <span class="kpi"><b>Tickets:</b> 6</span>
+          <span class="kpi"><b>Capital disponible:</b> US$ 120k</span>
+          <span class="kpi"><b>Preferencia:</b> B2B · Seed</span>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn" href="marketplace.html">Descubrir</a>
+        <a class="btn" href="portafolio.html">Ver portafolio</a>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <nav class="tabs" role="tablist" aria-label="Secciones de perfil">
+      <button class="tab is-active" role="tab" aria-selected="true" aria-controls="p-perfil" id="t-perfil">Perfil</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-preferencias" id="t-preferencias">Preferencias</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-verificacion" id="t-verificacion">Verificación</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-seguridad" id="t-seguridad">Seguridad</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-guardados" id="t-guardados">Guardados</button>
+    </nav>
+
+    <section class="content">
+      <!-- Columna izquierda -->
+      <article>
+        <!-- PERFIL -->
+        <section id="p-perfil" class="card panel" role="tabpanel" tabindex="0" aria-labelledby="t-perfil">
+          <div class="card-header">Perfil</div>
+          <div class="card-body">
+            <div class="list">
+              <div><b>Nombre</b><br/>Alex Martínez</div>
+              <div><b>Tipo de inversionista</b><br/>Ángel / Individuo</div>
+              <div><b>Ubicación</b><br/>Santo Domingo, Rep. Dominicana</div>
+              <div><b>Bio</b><br/>Operador en SaaS B2B (10+ años). Invierto en equipos técnicos que resuelven dolores claros en LATAM.</div>
+              <div><b>Tesis</b><br/>Early-stage B2B, eficiencia operativa, data y automatización en sectores tradicionales (agro, logística, finanzas).</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PREFERENCIAS -->
+        <section id="p-preferencias" class="card panel" role="tabpanel" tabindex="0" aria-labelledby="t-preferencias" hidden>
+          <div class="card-header" id="preferencias">Preferencias de inversión</div>
+          <div class="card-body">
+            <div class="list" style="margin-bottom:.75rem">
+              <div><b>Ticket objetivo</b><br/>US$ 10k – 75k</div>
+              <div><b>Etapas</b><br/><span class="chip">Pre-seed</span> <span class="chip">Seed</span></div>
+              <div><b>Modelos</b><br/><span class="chip">B2B</span> <span class="chip">SaaS</span> <span class="chip">Marketplaces</span></div>
+              <div><b>Sectores</b><br/><span class="chip">AgroTech</span> <span class="chip">FinTech</span> <span class="chip">Logística</span></div>
+              <div><b>Geografía</b><br/><span class="chip">RD</span> <span class="chip">Caribe</span> <span class="chip">LATAM</span></div>
+            </div>
+            <a class="btn btn-primary" href="marketplace.html">Aplicar preferencias en Marketplace</a>
+          </div>
+        </section>
+
+        <!-- VERIFICACIÓN -->
+        <section id="p-verificacion" class="card panel" role="tabpanel" tabindex="0" aria-labelledby="t-verificacion" hidden>
+          <div class="card-header">Verificación KYC / AML</div>
+          <div class="card-body">
+            <div class="list">
+              <div><b>Identidad</b><br/>Verificada ✅</div>
+              <div><b>Comprobantes</b><br/>Documento identidad (PDF), Prueba de domicilio (PDF)</div>
+              <div><b>Estado AML</b><br/><span class="chip" style="background:#dcfce7">Sin hallazgos</span></div>
+            </div>
+            <div style="margin-top:.75rem" class="list">
+              <div><b>Próximo chequeo</b><br/>Q1 2026</div>
+              <div><b>Políticas</b><br/><a href="#">Ver política de cumplimiento</a></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SEGURIDAD -->
+        <section id="p-seguridad" class="card panel" role="tabpanel" tabindex="0" aria-labelledby="t-seguridad" hidden>
+          <div class="card-header">Seguridad de la cuenta</div>
+          <div class="card-body">
+            <div class="list">
+              <div><b>2FA</b><br/><span class="chip">Activado</span></div>
+              <div><b>Último acceso</b><br/>28 Sep 2025 · 14:12</div>
+              <div><b>Dispositivos</b><br/>MacOS · iPhone</div>
+            </div>
+            <div class="hero-actions" style="margin-top:.75rem">
+              <a class="btn">Cambiar contraseña</a>
+              <a class="btn btn-ghost">Revocar sesiones</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- GUARDADOS -->
+        <section id="p-guardados" class="card panel" role="tabpanel" tabindex="0" aria-labelledby="t-guardados" hidden>
+          <div class="card-header">Startups guardadas</div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Startup</th><th>Sector</th><th>Etapa</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="startup_perfil.html">AgroIA SRL</a></td>
+                  <td>AgroTech</td>
+                  <td>MVP</td>
+                  <td><a class="btn" href="marketplace.html">Ver similares</a></td>
+                </tr>
+                <tr>
+                  <td><a href="startup_perfil.html">FinPay</a></td>
+                  <td>FinTech</td>
+                  <td>Tracción</td>
+                  <td><a class="btn" href="marketplace.html">Ver similares</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </article>
+
+      <!-- Columna derecha (aside) -->
+      <aside class="list" style="height:fit-content">
+        <!-- Acciones rápidas -->
+        <div class="card">
+          <div class="card-header">Acciones rápidas</div>
+          <div class="card-body list">
+            <a class="btn btn-primary" href="marketplace.html">Explorar oportunidades</a>
+            <a class="btn" href="portafolio.html">Ver portafolio</a>
+          </div>
+        </div>
+
+        <!-- Preferencias (resumen) -->
+        <div class="card">
+          <div class="card-header">Resumen de preferencias</div>
+          <div class="card-body list">
+            <div><b>Ticket</b><br/>US$ 10k–75k</div>
+            <div><b>Enfoque</b><br/>B2B · SaaS · Marketplaces</div>
+            <div><b>Sectores</b><br/>Agro · Fin · Logística</div>
+            <div><b>Geo</b><br/>RD/Caribe/LATAM</div>
+            <a class="btn" href="#p-preferencias" onclick="selectTab('p-preferencias')">Editar</a>
+          </div>
+        </div>
+
+        <!-- Notas -->
+        <div class="card">
+          <div class="card-header">Notas</div>
+          <div class="card-body">
+            <p class="muted">Este es un prototipo con datos estáticos para pruebas de UI.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- Bottom nav (móvil) -->
+  <nav class="bottom-nav" aria-label="Navegación inferior">
+    <a href="index.html" class="nav-item"><span class="nav-item-icon">🏠</span>Inicio</a>
+    <a href="marketplace.html" class="nav-item"><span class="nav-item-icon">🔍</span>Buscar</a>
+    <a href="portafolio.html" class="nav-item"><span class="nav-item-icon">💼</span>Portafolio</a>
+    <a href="reportes.html" class="nav-item"><span class="nav-item-icon">📊</span>Reportes</a>
+    <a href="perfil.html" class="nav-item"><span class="nav-item-icon">👤</span>Perfil</a>
+  </nav>
+
+  <!-- JS: Tabs accesibles + helper seleccionar tab por id -->
+  <script>
+    (function(){
+      const tabs = Array.from(document.querySelectorAll('[role="tablist"] [role="tab"]'));
+      const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+
+      function activate(i,{focus=false}={}){
+        tabs.forEach((t,idx)=>{
+          const on = idx===i;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          panels[idx].hidden = !on;
+          if(on && focus) t.focus();
+        });
+      }
+
+      // Navegación con teclado (APG)
+      tabs.forEach((t,i)=>{
+        t.addEventListener('click',()=>activate(i));
+        t.addEventListener('keydown',(e)=>{
+          let idx = tabs.indexOf(document.activeElement);
+          if(e.key==='ArrowRight'){e.preventDefault();idx=(idx+1)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='ArrowLeft'){e.preventDefault();idx=(idx-1+tabs.length)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='Home'){e.preventDefault();tabs[0].focus();}
+          else if(e.key==='End'){e.preventDefault();tabs[tabs.length-1].focus();}
+          else if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(idx);}
+        });
+      });
+
+      // Exponer helper global para aside "Editar"
+      window.selectTab = function(panelId){
+        const i = panels.findIndex(p=>p.id===panelId);
+        if(i>=0) activate(i,{focus:true});
+      };
+
+      // Estado inicial
+      activate(0);
+    })();
+  </script>
+</body>
+</html>

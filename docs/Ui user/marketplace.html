@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Marketplace – Startups | ANEIR (Inversionista)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ====== Tokens (alineados al dashboard inversionista) ====== */
+    :root{
+      --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+      --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+      --color-white:#fff; --color-border:#d1d5db;
+      --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6}
+
+    a{text-decoration:none;color:var(--color-primary)}
+    h1{color:var(--color-institutional);margin-bottom:.5rem}
+
+    /* ===== Topbar (manual) ===== */
+    .topbar{position:fixed;top:0;left:0;right:0;height:56px;background:var(--color-white);
+      border-bottom:1px solid var(--color-border);box-shadow:var(--shadow-md);z-index:1000;
+      display:flex;align-items:center;justify-content:space-between;padding:0 .75rem}
+    .topbar-logo{font-weight:700;color:var(--color-institutional)}
+    .topbar-nav{display:flex;gap:1rem;align-items:center;overflow-x:auto}
+    .topbar-nav a{color:var(--color-text);padding:.35rem .5rem;border-radius:.4rem;font-weight:600;white-space:nowrap}
+    .topbar-nav a.active,.topbar-nav a[aria-current="page"]{background:var(--color-primary);color:#fff}
+    .topbar-actions{display:flex;gap:.5rem}
+    .icon-btn{width:2rem;height:2rem;border-radius:9999px;background:var(--color-bg);display:grid;place-items:center}
+    .avatar{background:var(--color-institutional);color:#fff}
+
+    /* ===== Sidebar (manual) ===== */
+    .sidebar{position:fixed;top:56px;left:0;width:224px;height:calc(100vh - 56px);background:var(--color-white);
+      border-right:1px solid var(--color-border);padding:1rem;overflow:auto;display:none}
+    .sidebar-nav{display:flex;flex-direction:column;gap:.25rem}
+    .sidebar-nav a{color:var(--color-text);padding:.5rem;border-radius:.5rem}
+    .sidebar-nav a.active{background:#eef2ff;color:#3730a3;font-weight:700}
+
+    /* ===== Main ===== */
+    .main{padding:5rem 1rem 4rem}
+    .mk-meta{color:var(--color-muted)}
+    .filters-bar,.mk-toolbar{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin-bottom:1rem}
+    .filters-row{display:grid;gap:.75rem;grid-template-columns:1fr}
+    .field{display:flex;flex-direction:column}
+    .field label{font-weight:600;font-size:.9rem;margin-bottom:.35rem}
+    .input,select{border:1px solid var(--color-border);border-radius:.5rem;padding:.6rem;background:#fff}
+
+    .chips{display:flex;gap:.5rem;flex-wrap:wrap}
+    .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+
+    .mk-row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+    .mk-input,.mk-select{border:1px solid var(--color-border);border-radius:.5rem;padding:.55rem .7rem;background:#fff}
+    .mk-chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600;display:inline-flex;gap:.35rem;align-items:center;cursor:pointer}
+    .mk-chip[aria-pressed="true"]{outline:2px solid var(--color-primary);outline-offset:1px}
+    .mk-btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.5rem .9rem;font-weight:600;cursor:pointer}
+    .mk-btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+
+    .grid{display:grid;gap:1rem;grid-template-columns:1fr}
+    .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);overflow:hidden;display:flex;flex-direction:column}
+    .card-media{height:140px;background:linear-gradient(90deg,#e5e7eb,#f3f4f6)}
+    .card-body{padding:1rem}
+    .badge{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:9999px;padding:.15rem .5rem;font-size:.75rem;font-weight:700;margin-right:.35rem}
+    .meta{font-size:.9rem;color:#4b5563;margin:.25rem 0}
+    .kpis{display:flex;gap:1rem;font-size:.85rem;color:#374151;margin:.5rem 0}
+    .card-actions{display:flex;justify-content:space-between;align-items:center;padding:0 1rem 1rem}
+    .cta{background:var(--color-accent);color:#fff;border:0;border-radius:.5rem;padding:.5rem .8rem;font-weight:700;cursor:pointer}
+    .ghost{background:#fff;border:1px solid var(--color-border);border-radius:.5rem;padding:.45rem .8rem;font-weight:600;color:var(--color-text)}
+
+    .mk-pagination{display:flex;justify-content:center;gap:.25rem;flex-wrap:wrap;margin:1rem 0}
+    .mk-pagination a,.mk-pagination span{border:1px solid var(--color-border);border-radius:.5rem;padding:.45rem .7rem;background:#fff;color:var(--color-text)}
+    .mk-pagination a[aria-current="page"]{background:var(--color-primary);color:#fff;border-color:var(--color-primary);font-weight:700}
+
+    /* ===== Desktop ===== */
+    @media(min-width:768px){
+      .sidebar{display:block}
+      .main{padding:5rem 2rem 2rem calc(224px + 2rem)}
+      .filters-row{grid-template-columns:repeat(4,1fr)}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(min-width:1200px){ .grid{grid-template-columns:repeat(3,1fr)} }
+  </style>
+</head>
+<body>
+
+<!-- Topbar (único para TODAS las páginas del perfil inversionista) -->
+<header class="topbar" role="banner">
+  <div class="topbar-logo">
+    <a href="index.html" style="color:inherit">ANEIR</a>
+  </div>
+
+  <nav class="topbar-nav" aria-label="Principal">
+    <!-- Marca la página actual con class="active" -->
+    <a href="index.html" class="">Inicio</a>
+    <a href="marketplace.html" class="">Marketplace</a>
+    <a href="ayuda_faq.html" class="">Ayuda</a>
+  </nav>
+
+  <div class="topbar-actions">
+    <button class="icon-btn" aria-label="Notificaciones">🔔</button>
+    <!-- El avatar lleva al perfil; no hay item "Perfil" en el menú -->
+    <a class="icon-btn avatar" href="perfil.html" title="Perfil">A</a>
+  </div>
+</header>
+
+<!-- Sidebar (único para TODAS las páginas del perfil inversionista) -->
+<aside class="sidebar" aria-label="Secundaria">
+  <nav class="sidebar-nav">
+    <!-- Marca la página actual con class="active" -->
+    <a href="index.html" class="">Mi Panel</a>
+    <a href="marketplace.html" class="">Descubrir Startups</a>
+    <hr/>
+    <a href="ayuda_faq.html" class="">Ayuda / FAQ</a>
+  </nav>
+</aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Toolbar rápida -->
+    <section class="mk-toolbar" aria-label="Búsqueda y filtros rápidos">
+      <div class="mk-row">
+        <input id="mk-q" class="mk-input" placeholder="Buscar por nombre, sector, etapa… (demo estático)" aria-label="Buscar startups">
+        <select id="mk-sort" class="mk-select" aria-label="Ordenar">
+          <option value="relevancia">Ordenar: Relevancia</option>
+          <option value="recientes">Más recientes</option>
+          <option value="ia">Puntaje IA</option>
+        </select>
+        <button id="mk-clear" class="mk-btn">Limpiar</button>
+        <button class="mk-btn mk-btn-primary">Aplicar</button>
+        <span class="mk-chip" style="margin-left:auto" id="mk-result-count" aria-live="polite">12 resultados</span>
+      </div>
+      <div class="mk-row" aria-label="Filtros rápidos">
+        <button class="mk-chip" role="button" aria-pressed="false" data-filter="sector:FinTech">FinTech</button>
+        <button class="mk-chip" role="button" aria-pressed="false" data-filter="sector:AgroTech">AgroTech</button>
+        <button class="mk-chip" role="button" aria-pressed="false" data-filter="modelo:B2B">B2B</button>
+        <button class="mk-chip" role="button" aria-pressed="false" data-filter="etapa:MVP">MVP</button>
+      </div>
+    </section>
+
+    <h1>Descubre Startups</h1>
+    <p class="mk-meta" style="margin-bottom:1rem">Filtra por sector, etapa y ticket para encontrar oportunidades.</p>
+
+    <!-- Facetas -->
+    <section class="filters-bar" aria-label="Filtros del marketplace">
+      <div class="filters-row">
+        <div class="field">
+          <label for="q">Buscar</label>
+          <input id="q" class="input" placeholder="Nombre, problema, tecnología… (demo estático)"/>
+        </div>
+        <div class="field">
+          <label for="sector">Sector</label>
+          <select id="sector">
+            <option>Todos</option><option>AgroTech</option><option>FinTech</option><option>HealthTech</option>
+            <option>EdTech</option><option>Energía</option><option>Manufactura</option><option>Turismo</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="stage">Etapa</label>
+          <select id="stage">
+            <option>Todas</option><option>Idea</option><option>MVP</option><option>Tracción</option>
+            <option>Crecimiento</option><option>Escalamiento</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="ticket">Ticket (meta)</label>
+          <select id="ticket">
+            <option>Cualquiera</option><option>≤ US$50k</option><option>US$50k–200k</option>
+            <option>US$200k–1M</option><option>≥ US$1M</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="chips" style="margin-top:.25rem">
+        <span class="chip">RD</span><span class="chip">Impacto Social</span><span class="chip">B2B</span>
+        <button class="ghost" style="margin-left:auto">Limpiar</button>
+        <button class="mk-btn mk-btn-primary">Aplicar</button>
+      </div>
+    </section>
+
+    <!-- Resultados -->
+    <section class="grid" aria-label="Resultados">
+      <!-- Card 1 -->
+      <article class="card">
+        <div class="card-media" role="img" aria-label="Imagen de portada de AgroIA (mock)"></div>
+        <div class="card-body">
+          <div>
+            <span class="badge">AgroTech</span>
+            <span class="badge" style="background:#dcfce7;color:#065f46">MVP</span>
+          </div>
+          <h3 style="margin:.4rem 0">AgroIA SRL</h3>
+          <p class="meta">Monitorea cultivos con visión e IA para reducir pérdidas 20%.</p>
+          <div class="kpis">
+            <span>Ticket: US$50k–200k</span>
+            <span>IA Score: 82</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="ghost" href="startup_perfil.html">Ver perfil</a>
+          <button class="cta">Solicitar contacto</button>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card">
+        <div class="card-media" role="img" aria-label="Imagen de portada de FinPay (mock)"></div>
+        <div class="card-body">
+          <div>
+            <span class="badge">FinTech</span>
+            <span class="badge" style="background:#fee2e2;color:#991b1b">Tracción</span>
+          </div>
+          <h3 style="margin:.4rem 0">FinPay</h3>
+          <p class="meta">Pagos B2B para MIPYMES con factoring en 48 h.</p>
+          <div class="kpis">
+            <span>MRR: US$12k</span>
+            <span>IA Score: 88</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="ghost" href="startup_perfil.html">Ver perfil</a>
+          <button class="cta">Solicitar contacto</button>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card">
+        <div class="card-media" role="img" aria-label="Imagen de portada de Salud+ (mock)"></div>
+        <div class="card-body">
+          <div>
+            <span class="badge">HealthTech</span>
+            <span class="badge" style="background:#fffbeb;color:#92400e">Idea</span>
+          </div>
+          <h3 style="margin:.4rem 0">Salud+</h3>
+          <p class="meta">Teleconsulta rural con red de microclínicas móviles.</p>
+          <div class="kpis">
+            <span>Ticket: ≤ US$50k</span>
+            <span>IA Score: 61</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="ghost" href="startup_perfil.html">Ver perfil</a>
+          <button class="cta">Solicitar contacto</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- Paginación -->
+    <nav class="mk-pagination" role="navigation" aria-label="Paginación de resultados">
+      <a href="#" aria-label="Anterior">«</a>
+      <a href="#" aria-label="Página 1">1</a>
+      <a href="#" aria-current="page" aria-label="Página 2, actual">2</a>
+      <a href="#" aria-label="Página 3">3</a>
+      <span aria-disabled="true" aria-label="Más">…</span>
+      <a href="#" aria-label="Siguiente">»</a>
+    </nav>
+  </main>
+
+  <!-- Bottom nav (móvil) -->
+  <nav class="bottom-nav" aria-label="Navegación inferior">
+    <a href="./index.html" class="nav-item"><span class="nav-item-icon">🏠</span>Inicio</a>
+    <a href="./marketplace.html" class="nav-item active"><span class="nav-item-icon">🔍</span>Buscar</a>
+    <a href="portafolio.html" class="nav-item"><span class="nav-item-icon">💼</span>Portafolio</a>
+    <a href="reportes.html" class="nav-item"><span class="nav-item-icon">📊</span>Reportes</a>
+    <a href="./perfil.html" class="nav-item"><span class="nav-item-icon">👤</span>Perfil</a>
+  </nav>
+
+  <!-- JS mínimo: marcar activo en topbar y sidebar según archivo -->
+  <script>
+    (function(){
+      const file = (location.pathname.split('/').pop() || 'marketplace.html').toLowerCase();
+      document.querySelectorAll('.topbar-nav a, .sidebar-nav a').forEach(a=>{
+        const expected = (a.getAttribute('data-file') || '').toLowerCase();
+        const isActive = expected === file;
+        if(isActive){
+          a.classList.add('active');
+          if(a.closest('.topbar-nav')) a.setAttribute('aria-current','page'); // accesibilidad
+        }
+      });
+
+      // Demo: filtros rápidos que cambian contador
+      const chips = Array.from(document.querySelectorAll('.mk-chip[role="button"]'));
+      const q = document.getElementById('mk-q');
+      const cnt = document.getElementById('mk-result-count');
+      const clear = document.getElementById('mk-clear');
+
+      function activeFilters(){ return chips.filter(c=>c.getAttribute('aria-pressed')==='true').map(c=>c.dataset.filter); }
+      function updateCount(){
+        const base = 12; const n = Math.max(0, base - activeFilters().length*2 - (q && q.value ? 1 : 0));
+        if (cnt) cnt.textContent = `${n} resultados`;
+      }
+
+      chips.forEach(c=>{
+        c.addEventListener('click', ()=>{
+          const on = c.getAttribute('aria-pressed')==='true';
+          c.setAttribute('aria-pressed', on ? 'false' : 'true');
+          updateCount();
+        });
+      });
+      q && q.addEventListener('input', updateCount);
+      clear && clear.addEventListener('click', ()=>{
+        chips.forEach(c=>c.setAttribute('aria-pressed','false'));
+        if(q) q.value='';
+        updateCount();
+      });
+      updateCount();
+    })();
+  </script>
+</body>
+</html>

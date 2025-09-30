@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Reportes | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== Tokens (coherentes con el resto) ===== */
+  :root{
+    --color-primary:#1f4fd6;
+    --color-accent:#14b8a6;
+    --color-institutional:#132e80;
+    --color-text:#1f2937;
+    --color-muted:#4b5563;
+    --color-bg:#e5e7eb;
+    --color-surface:#ffffff;
+    --color-surface-subtle:#f8fafc;
+    --color-border:#d1d5db;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+
+    /* Paleta para series (colorblind-friendly: azul/amarillo/teal/rose aprox.) */
+    --series-1:#1f4fd6;  /* azul */
+    --series-2:#ffc20a;  /* amarillo (alto contraste con azul) */
+    --series-3:#14b8a6;  /* teal */
+    --series-4:#ef4444;  /* rojo para alertas */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+  a{text-decoration:none;color:var(--color-primary)}
+  h1,h2{color:var(--color-institutional)}
+  .muted{color:var(--color-muted)}
+
+  /* Topbar */
+  .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* Main */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+
+  /* Filtros y acciones */
+  .toolbar{display:grid;gap:.75rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin-bottom:1rem}
+  .toolbar-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+  .input, select{border:1px solid var(--color-border);border-radius:.5rem;padding:.55rem .7rem;background:#fff}
+  .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.55rem .8rem;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+  .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+
+  /* KPIs */
+  .kpi-grid{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:900px){ .kpi-grid{grid-template-columns:repeat(4,1fr)} }
+  .kpi{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem}
+  .kpi .label{font-size:.9rem;color:var(--color-muted)}
+  .kpi .value{font-size:1.6rem;font-weight:800;margin:.25rem 0}
+  .trend{font-size:.9rem}
+  .up{color:#16a34a}.down{color:#b91c1c}
+
+  /* Lienzos de gráficos */
+  .cards{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:1100px){ .cards{grid-template-columns:2fr 1fr} }
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);overflow:hidden}
+  .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+  .card-body{padding:1rem}
+  .legend{display:flex;gap:.75rem;flex-wrap:wrap;font-size:.9rem}
+  .legend .key{display:inline-flex;align-items:center;gap:.35rem}
+  .swatch{width:12px;height:12px;border-radius:2px;background:#000;display:inline-block}
+
+  /* Tabla */
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:.6rem;border-bottom:1px solid var(--color-border);text-align:left}
+  thead th{position:sticky;top:0;background:var(--color-surface-subtle);z-index:1}
+  caption{caption-side:top;text-align:left;padding-bottom:.5rem;font-weight:700;color:var(--color-institutional)}
+  .table-wrap{max-height:340px;overflow:auto;border:1px solid var(--color-border);border-radius:.5rem}
+
+  /* Ayudas de acceso visual: patrones para series (no solo color) */
+  .bar{fill:var(--series-1)}
+  .bar.pattern{fill:url(#diag)}
+  .line{stroke:var(--series-2);stroke-width:3;fill:none}
+  .dot{fill:var(--series-2)}
+  .area{fill:var(--series-3);opacity:.18}
+
+  /* Export */
+  .actions{display:flex;gap:.5rem;align-items:center}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <h1>Reportes</h1>
+    <p class="muted" style="margin:.25rem 0 1rem">KPIs clave y visuales comparativos. (Datos estáticos de ejemplo)</p>
+
+    <!-- Filtros -->
+    <section class="toolbar" aria-label="Filtros de reportes">
+      <div class="toolbar-row">
+        <label>Rango:
+          <input class="input" type="date" value="2025-08-01" />
+        </label>
+        <span>—</span>
+        <label>
+          <input class="input" type="date" value="2025-09-28" />
+        </label>
+        <select class="input" aria-label="Agrupación">
+          <option>Agrupar por: Semana</option>
+          <option>Mes</option>
+          <option>Día</option>
+        </select>
+        <select class="input" aria-label="Vista">
+          <option>Vista: General</option>
+          <option>Convocatorias</option>
+          <option>Academia</option>
+          <option>Trámites</option>
+        </select>
+        <span class="chip">RD</span>
+        <span class="chip">B2B</span>
+        <button class="btn">Limpiar</button>
+        <button class="btn btn-primary">Aplicar</button>
+
+        <div class="actions" style="margin-left:auto">
+          <button id="btnCsv" class="btn" title="Exportar datos a CSV">Exportar CSV</button>
+          <button class="btn" onclick="window.print()" title="Imprimir/Guardar PDF">Imprimir</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="kpi-grid" aria-label="Indicadores">
+      <div class="kpi">
+        <div class="label">Usuarios activos</div>
+        <div class="value">3,240</div>
+        <div class="trend up">▲ +8% vs. período anterior</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Tasa de conversión</div>
+        <div class="value">4.2%</div>
+        <div class="trend up">▲ +0.6 pp</div>
+      </div>
+      <div class="kpi">
+        <div class="label">NPS</div>
+        <div class="value">62</div>
+        <div class="trend down">▼ −2 pts</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Convocatorias completadas</div>
+        <div class="value">18</div>
+        <div class="trend up">▲ +3</div>
+      </div>
+    </section>
+
+    <!-- Gráficos -->
+    <section class="cards" style="margin-top:1rem">
+      <!-- Serie combinada: barras + línea -->
+      <article class="card" aria-labelledby="chart1-title">
+        <div class="card-header">
+          <span id="chart1-title">Usuarios y Conversión por semana</span>
+          <div class="legend" aria-hidden="true">
+            <span class="key"><span class="swatch" style="background:var(--series-1)"></span> Usuarios</span>
+            <span class="key"><span class="swatch" style="background:var(--series-2)"></span> Conversión</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- SVG estático (bar + line); con patrón para no depender solo del color -->
+          <svg viewBox="0 0 600 260" role="img" aria-label="Usuarios (barras) y Conversión (línea). Semanas 32 a 39. Pico de conversión en la 37.">
+            <defs>
+              <!-- Patrón diagonal para accesibilidad (no solo color) -->
+              <pattern id="diag" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="#ffffff" stroke-width="2" />
+              </pattern>
+              <clipPath id="inner">
+                <rect x="50" y="20" width="520" height="180" rx="6" ry="6"/>
+              </clipPath>
+            </defs>
+            <!-- ejes -->
+            <rect x="50" y="20" width="520" height="180" fill="#fff" stroke="#e5e7eb" />
+            <!-- barras usuarios -->
+            <g clip-path="url(#inner)">
+              <!-- valores ficticios escalados -->
+              <rect class="bar" x="70"  y="140" width="30" height="60" />
+              <rect class="bar pattern" x="130" y="120" width="30" height="80" />
+              <rect class="bar" x="190" y="100" width="30" height="100" />
+              <rect class="bar pattern" x="250" y="90"  width="30" height="110" />
+              <rect class="bar" x="310" y="110" width="30" height="90" />
+              <rect class="bar pattern" x="370" y="95"  width="30" height="105" />
+              <rect class="bar" x="430" y="130" width="30" height="70" />
+              <rect class="bar pattern" x="490" y="150" width="30" height="50" />
+              <!-- línea conversión (0–6%) -->
+              <path class="line" d="M85 180 L145 160 L205 150 L265 120 L325 130 L385 110 L445 150 L505 165" />
+              <!-- puntos -->
+              <circle class="dot" cx="85" cy="180" r="3"/><circle class="dot" cx="145" cy="160" r="3"/>
+              <circle class="dot" cx="205" cy="150" r="3"/><circle class="dot" cx="265" cy="120" r="3"/>
+              <circle class="dot" cx="325" cy="130" r="3"/><circle class="dot" cx="385" cy="110" r="3"/>
+              <circle class="dot" cx="445" cy="150" r="3"/><circle class="dot" cx="505" cy="165" r="3"/>
+            </g>
+            <!-- etiquetas eje X -->
+            <g font-size="10" fill="#6b7280">
+              <text x="75" y="215">S32</text><text x="135" y="215">S33</text>
+              <text x="195" y="215">S34</text><text x="255" y="215">S35</text>
+              <text x="315" y="215">S36</text><text x="375" y="215">S37</text>
+              <text x="435" y="215">S38</text><text x="495" y="215">S39</text>
+            </g>
+          </svg>
+          <p class="muted" style="margin-top:.35rem">Recomendación: prioriza comparaciones y evita sobrecargar (NN/g, Material). Usa patrones además de color para identificar series. :contentReference[oaicite:1]{index=1}</p>
+        </div>
+      </article>
+
+      <!-- Distribución por estado (donut simplificada con etiquetas) -->
+      <article class="card" aria-labelledby="chart2-title">
+        <div class="card-header">
+          <span id="chart2-title">Estados de solicitudes (último mes)</span>
+        </div>
+        <div class="card-body">
+          <svg viewBox="0 0 280 220" role="img" aria-label="Aprobadas 45%, En revisión 35%, Rechazadas 20%">
+            <defs>
+              <mask id="hole"><rect x="0" y="0" width="280" height="220" fill="#fff"/><circle cx="140" cy="100" r="36" fill="#000"/></mask>
+            </defs>
+            <!-- anillos -->
+            <g transform="translate(140,100)" mask="url(#hole)">
+              <!-- 45% -->
+              <path d="M0 0 L70 0 A70 70 0 0 1 -20.6 66.9 Z" fill="var(--series-3)"/>
+              <!-- 35% -->
+              <path d="M0 0 L-20.6 66.9 A70 70 0 0 1 -66.9 -20.6 Z" fill="var(--series-1)"/>
+              <!-- 20% -->
+              <path d="M0 0 L-66.9 -20.6 A70 70 0 0 1 70 0 Z" fill="var(--series-2)"/>
+            </g>
+            <!-- etiquetas -->
+            <g font-size="12" fill="#111827">
+              <rect x="20" y="155" width="12" height="12" fill="var(--series-3)"/><text x="38" y="165">Aprobadas 45%</text>
+              <rect x="20" y="175" width="12" height="12" fill="var(--series-1)"/><text x="38" y="185">En revisión 35%</text>
+              <rect x="20" y="195" width="12" height="12" fill="var(--series-2)"/><text x="38" y="205">Rechazadas 20%</text>
+            </g>
+          </svg>
+          <p class="muted">Evita depender solo del color; usa texto/leyenda clara y suficiente contraste. :contentReference[oaicite:2]{index=2}</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- Tabla de detalle -->
+    <section style="margin-top:1rem">
+      <div class="card">
+        <div class="card-header">
+          <span>Detalle por semana</span>
+          <div class="actions">
+            <button id="btnCsv2" class="btn" title="Exportar tabla a CSV">Exportar CSV</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-wrap" role="region" aria-label="Tabla de detalle por semana" tabindex="0">
+            <table aria-describedby="t-caption">
+              <caption id="t-caption">Métricas semanales (estático)</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Semana</th>
+                  <th scope="col">Usuarios</th>
+                  <th scope="col">Conversiones</th>
+                  <th scope="col">Tasa conv.</th>
+                  <th scope="col">NPS</th>
+                </tr>
+              </thead>
+              <tbody id="rows">
+                <tr><td>S32</td><td>1,120</td><td>41</td><td>3.7%</td><td>61</td></tr>
+                <tr><td>S33</td><td>1,260</td><td>50</td><td>4.0%</td><td>63</td></tr>
+                <tr><td>S34</td><td>1,380</td><td>55</td><td>4.0%</td><td>64</td></tr>
+                <tr><td>S35</td><td>1,520</td><td>70</td><td>4.6%</td><td>65</td></tr>
+                <tr><td>S36</td><td>1,420</td><td>60</td><td>4.2%</td><td>62</td></tr>
+                <tr><td>S37</td><td>1,560</td><td>78</td><td>5.0%</td><td>63</td></tr>
+                <tr><td>S38</td><td>1,280</td><td>54</td><td>4.2%</td><td>60</td></tr>
+                <tr><td>S39</td><td>1,050</td><td>44</td><td>4.2%</td><td>59</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="muted" style="margin-top:.35rem">Usa estructura semántica de tabla con encabezados/`caption`; aplica ARIA solo si hace falta. :contentReference[oaicite:3]{index=3}</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // === CSV de ejemplo (exporta las filas actuales de la tabla)
+    function exportTableCSV(tableId, filename='reporte.csv'){
+      const rows = Array.from(document.querySelectorAll(`#${tableId} tr`));
+      const csv = rows.map(r => Array.from(r.querySelectorAll('th,td'))
+        .map(c => `"${c.textContent.replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+    }
+    document.getElementById('btnCsv').addEventListener('click', ()=> exportTableCSV('rows','reporte-series.csv'));
+    document.getElementById('btnCsv2').addEventListener('click', ()=> exportTableCSV('rows','reporte-tabla.csv'));
+  </script>
+</body>
+</html>

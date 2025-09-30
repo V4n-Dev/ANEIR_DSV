@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AgroIA SRL — Perfil | ANEIR (Inversionista)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Tokens (alineados al set del inversionista) ===== */
+    :root{
+      --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+      --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+      --color-surface:#ffffff; --color-border:#d1d5db;
+      --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+    a{text-decoration:none;color:var(--color-primary)}
+
+    /* Topbar (manual) */
+    .topbar{position:fixed;top:0;left:0;right:0;height:56px;background:var(--color-surface);
+      border-bottom:1px solid var(--color-border);box-shadow:var(--shadow-md);z-index:1000;
+      display:flex;align-items:center;justify-content:space-between;padding:0 .75rem}
+    .topbar-logo{font-weight:700;color:var(--color-institutional)}
+    .topbar-nav{display:flex;gap:1rem;align-items:center}
+    .topbar-nav a{color:var(--color-text);padding:.35rem .5rem;border-radius:.4rem;font-weight:600;white-space:nowrap}
+    .topbar-nav a.active,.topbar-nav a[aria-current="page"]{background:var(--color-primary);color:#fff}
+    .topbar-actions{display:flex;gap:.5rem}
+    .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center}
+    .avatar{background:var(--color-institutional);color:#fff}
+
+    /* Sidebar (manual) */
+    .sidebar{position:fixed;top:56px;left:0;width:224px;height:calc(100vh - 56px);background:var(--color-surface);
+      border-right:1px solid var(--color-border);padding:1rem;overflow:auto;display:none}
+    .sidebar-nav{display:flex;flex-direction:column;gap:.25rem}
+    .sidebar-nav a{color:var(--color-text);padding:.5rem;border-radius:.5rem}
+    .sidebar-nav a.active{background:#eef2ff;color:#3730a3;font-weight:700}
+
+    /* Main */
+    .main{flex-grow:1;padding:5rem 1rem 2rem}
+    @media(min-width:768px){ .sidebar{display:block} .main{padding:5rem 2rem 2rem calc(224px + 2rem)} }
+    h1,h2{color:var(--color-institutional)}
+    .muted{color:var(--color-muted)}
+
+    /* Breadcrumb */
+    .breadcrumb{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem;font-size:.9rem}
+    .breadcrumb .sep{opacity:.6}
+
+    /* Hero */
+    .hero{background:var(--color-surface);border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);overflow:hidden;margin-bottom:1rem}
+    .cover{height:150px;background:linear-gradient(90deg,#e5e7eb,#f3f4f6)}
+    .hero-body{display:flex;gap:1rem;align-items:flex-end;padding:1rem;flex-wrap:wrap}
+    .logo{width:72px;height:72px;border-radius:.75rem;background:#cbd5e1;border:2px solid #fff;box-shadow:var(--shadow-md)}
+    .hero-info{flex:1}
+    .badges{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.25rem}
+    .badge{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:9999px;padding:.15rem .5rem;font-size:.75rem;font-weight:700}
+    .meta{font-size:.9rem;color:var(--color-muted)}
+    .actions{display:flex;gap:.5rem;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.55rem .9rem;font-weight:600;cursor:pointer}
+    .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .ghost{background:transparent;border:1px solid var(--color-border)}
+
+    /* Layout columnas */
+    .content{display:grid;gap:1rem;grid-template-columns:1fr}
+    @media(min-width:1100px){ .content{grid-template-columns:2fr 1fr} }
+    .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+    .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+    .card-body{padding:1rem}
+    .aside{position:sticky;top:4.5rem;display:grid;gap:1rem;height:fit-content}
+
+    /* Tabs */
+    .tabs{position:sticky;top:4.25rem;z-index:5;display:flex;gap:.25rem;overflow-x:auto;background:#fff;border:1px solid var(--color-border);border-radius:.75rem;padding:.25rem;box-shadow:var(--shadow-md)}
+    .tab{appearance:none;border:1px solid transparent;background:transparent;color:var(--color-institutional);font-weight:700;cursor:pointer;padding:.6rem .9rem;border-radius:.6rem;white-space:nowrap}
+    .tab:is(:hover,:focus-visible){background:#f8fafc;outline:none}
+    .tab.is-active{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .panel[hidden]{display:none}
+
+    /* Listas y tablas */
+    .list{display:grid;gap:.5rem}
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    th,td{padding:.6rem;border-bottom:1px solid var(--color-border);text-align:left}
+    thead th{position:sticky;top:0;background:#f8fafc;z-index:1}
+    .kpis{display:flex;gap:1rem;flex-wrap:wrap;font-size:.95rem}
+    .kpi{background:#f8fafc;border:1px solid var(--color-border);border-radius:.6rem;padding:.5rem .75rem}
+    .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+  </style>
+</head>
+<body>
+<!-- Topbar (único para TODAS las páginas del perfil inversionista) -->
+<header class="topbar" role="banner">
+  <div class="topbar-logo">
+    <a href="index.html" style="color:inherit">ANEIR</a>
+  </div>
+
+  <nav class="topbar-nav" aria-label="Principal">
+    <!-- Marca la página actual con class="active" -->
+    <a href="index.html" class="">Inicio</a>
+    <a href="marketplace.html" class="">Marketplace</a>
+    <a href="ayuda_faq.html" class="">Ayuda</a>
+  </nav>
+
+  <div class="topbar-actions">
+    <button class="icon-btn" aria-label="Notificaciones">🔔</button>
+    <!-- El avatar lleva al perfil; no hay item "Perfil" en el menú -->
+    <a class="icon-btn avatar" href="perfil.html" title="Perfil">A</a>
+  </div>
+</header>
+
+<!-- Sidebar (único para TODAS las páginas del perfil inversionista) -->
+<aside class="sidebar" aria-label="Secundaria">
+  <nav class="sidebar-nav">
+    <!-- Marca la página actual con class="active" -->
+    <a href="index.html" class="">Mi Panel</a>
+    <a href="marketplace.html" class="">Descubrir Startups</a>
+    <hr/>
+    <a href="ayuda_faq.html" class="">Ayuda / FAQ</a>
+  </nav>
+</aside>
+
+  <!-- Main -->
+  <main id="main" class="main">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="Ui user/marketplace.html">Marketplace</a>
+      <span class="sep">/</span>
+      <a href="Ui user/marketplace.html">Startups</a>
+      <span class="sep">/</span>
+      <span aria-current="page">AgroIA SRL</span>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" aria-label="Encabezado del perfil">
+      <div class="cover" role="img" aria-label="Cover de la startup (mock)"></div>
+      <div class="hero-body">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="hero-info">
+          <h1>AgroIA SRL</h1>
+          <p class="meta">AgroTech · Santo Domingo · Fundada 2023</p>
+          <div class="badges">
+            <span class="badge">B2B</span>
+            <span class="badge">MVP/Tracción</span>
+            <span class="badge">Exportable</span>
+            <span class="badge">IA Score 82</span>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn ghost" href="Ui user/marketplace.html">← Volver</a>
+          <a class="btn" href="#contacto">Contactar</a>
+          <a class="btn btn-primary" href="#documentos">Ver documentos</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layout -->
+    <section class="content">
+      <article>
+        <!-- Tabs -->
+        <nav class="tabs" role="tablist" aria-label="Secciones del perfil">
+          <button class="tab is-active" role="tab" aria-selected="true" aria-controls="p-resumen" id="t-resumen">Resumen</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-kpis" id="t-kpis">KPIs</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-equipo" id="t-equipo">Equipo</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-documentos" id="t-documentos">Documentos</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-contacto" id="t-contacto">Contacto</button>
+        </nav>
+
+        <!-- Panel: Resumen -->
+        <section id="p-resumen" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-resumen">
+          <h2>Resumen</h2>
+          <p>AgroIA desarrolla soluciones de <b>visión por computadora</b> para monitoreo de cultivos y <b>predicción de rendimiento</b>.
+             En pilotos con 12 clientes, reportan reducción de pérdidas del 20% y mejoras en planificación de cosecha.</p>
+          <div class="kpis" style="margin-top:.6rem">
+            <span class="kpi"><b>Clientes:</b> 12</span>
+            <span class="kpi"><b>Equipo:</b> 6</span>
+            <span class="kpi"><b>MRR:</b> US$ 9.5k</span>
+            <span class="kpi"><b>ARPU:</b> US$ 120</span>
+          </div>
+          <div style="margin-top:.75rem">
+            <span class="chip">Computer Vision</span>
+            <span class="chip">AgroData</span>
+            <span class="chip">SaaS</span>
+          </div>
+        </section>
+
+        <!-- Panel: KPIs -->
+        <section id="p-kpis" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-kpis" hidden>
+          <h2>KPIs</h2>
+          <div class="kpis">
+            <span class="kpi"><b>Crecimiento MRR (3m):</b> +14%</span>
+            <span class="kpi"><b>Retención logos:</b> 92%</span>
+            <span class="kpi"><b>Churn ingreso:</b> 3.1%</span>
+            <span class="kpi"><b>Gross Margin:</b> 72%</span>
+          </div>
+          <table style="margin-top:.75rem">
+            <thead><tr><th>Mes</th><th>MRR</th><th>Clientes</th><th>Churn</th></tr></thead>
+            <tbody>
+              <tr><td>Jul</td><td>8.7k</td><td>10</td><td>3.5%</td></tr>
+              <tr><td>Ago</td><td>9.1k</td><td>11</td><td>3.2%</td></tr>
+              <tr><td>Sep</td><td>9.5k</td><td>12</td><td>3.1%</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Panel: Equipo -->
+        <section id="p-equipo" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-equipo" hidden>
+          <h2>Equipo</h2>
+          <ul class="list" style="margin-top:.5rem">
+            <li><b>Ana Gómez</b> — CEO & Producto (ex-AgTechCo, 8 años)</li>
+            <li><b>Juan Pérez</b> — CTO (Visión por computadora, 7 años)</li>
+            <li><b>Laura Ruiz</b> — Data Scientist (modelos de predicción)</li>
+            <li><b>Carlos Díaz</b> — Growth (B2B, agroexportadoras)</li>
+          </ul>
+        </section>
+
+        <!-- Panel: Documentos -->
+        <section id="p-documentos" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-documentos" hidden>
+          <h2 id="documentos">Documentos</h2>
+          <ul class="list">
+            <li>Pitch deck (PDF)</li>
+            <li>Resumen ejecutivo (PDF)</li>
+            <li>Métricas mensuales (CSV)</li>
+          </ul>
+        </section>
+
+        <!-- Panel: Contacto -->
+        <section id="p-contacto" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-contacto" hidden>
+          <h2 id="contacto">Contacto</h2>
+          <p class="muted">Este es un bloque simulado (no envía datos).</p>
+          <div class="list" style="margin-top:.5rem">
+            <div><b>Correo:</b> contacto@agroia.do</div>
+            <div><b>Sitio:</b> www.agroia.do</div>
+          </div>
+          <div class="actions" style="margin-top:.75rem">
+            <a class="btn btn-primary" href="#">Solicitar reunión</a>
+            <a class="btn ghost" href="Ui user/marketplace.html">Seguir explorando</a>
+          </div>
+        </section>
+      </article>
+
+      <!-- Aside -->
+      <aside class="aside">
+        <div class="card">
+          <div class="card-header">Oportunidad</div>
+          <div class="card-body">
+            <div class="list">
+              <div><b>Ticket objetivo</b><br/>US$ 50k – 200k</div>
+              <div><b>Uso de fondos</b><br/>Modelo de predicción v2, ventas B2B</div>
+              <div><b>Riesgos</b><br/>Ciclos de venta largos, dependencia climática</div>
+            </div>
+            <div class="actions" style="margin-top:.75rem">
+              <a class="btn" href="#p-documentos">Ver documentos</a>
+              <a class="btn btn-primary" href="#contacto">Contactar</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Relacionado</div>
+          <div class="card-body">
+            <ul class="list">
+              <li><a href="startup_perfil.html">AgroIA · Visión (este)</a></li>
+              <li><a href="startup_perfil.html">AgroData · Sensores IoT</a></li>
+              <li><a href="startup_perfil.html">AgroLogix · Logística</a></li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- JS Tabs accesibles -->
+  <script>
+    (function(){
+      const tabs = Array.from(document.querySelectorAll('[role="tablist"] [role="tab"]'));
+      const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+
+      function activate(i){
+        tabs.forEach((t,idx)=>{
+          const on = idx===i;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          panels[idx].hidden = !on;
+        });
+      }
+      tabs.forEach((t,i)=>{
+        t.addEventListener('click',()=>activate(i));
+        t.addEventListener('keydown',(e)=>{
+          let idx=tabs.indexOf(document.activeElement);
+          if(e.key==='ArrowRight'){e.preventDefault();idx=(idx+1)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='ArrowLeft'){e.preventDefault();idx=(idx-1+tabs.length)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='Home'){e.preventDefault();tabs[0].focus();}
+          else if(e.key==='End'){e.preventDefault();tabs[tabs.length-1].focus();}
+          else if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(idx);}
+        });
+      });
+      activate(0);
+    })();
+  </script>
+</body>
+</html>

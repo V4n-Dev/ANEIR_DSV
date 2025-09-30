@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mentor – Dr. Luis Pérez | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== Tokens coherentes ===== */
+  :root{
+    --color-primary:#1f4fd6;
+    --color-accent:#14b8a6;
+    --color-institutional:#132e80;
+    --color-text:#1f2937;
+    --color-muted:#4b5563;
+    --color-bg:#e5e7eb;
+    --color-surface:#ffffff;
+    --color-surface-subtle:#f8fafc;
+    --color-border:#d1d5db;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+  a{text-decoration:none;color:var(--color-primary)}
+  h1,h2{color:var(--color-institutional)}
+  .muted{color:var(--color-muted)}
+
+  /* Topbar */
+  .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* Main */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+
+  /* Breadcrumb */
+  .breadcrumb{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.5rem;font-size:.9rem;color:var(--color-muted)}
+  .breadcrumb a{color:var(--color-muted)}
+  .breadcrumb .sep{opacity:.6}
+
+  /* Hero mentor */
+  .hero{display:grid;gap:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin-bottom:1rem}
+  .hero-top{display:flex;gap:1rem;align-items:center}
+  .avatar{width:72px;height:72px;border-radius:9999px;background:#cbd5e1;border:2px solid #fff}
+  .chips{display:flex;gap:.5rem;flex-wrap:wrap}
+  .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+  .stats{display:flex;gap:1rem;flex-wrap:wrap}
+  .stat{background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:.6rem;padding:.5rem .75rem}
+
+  .btn-primary{background:var(--color-primary);color:#fff;border:0;border-radius:.5rem;padding:.6rem 1rem;font-weight:700;cursor:pointer}
+  .ghost{background:transparent;border:1px solid var(--color-border);border-radius:.5rem;padding:.5rem .9rem;font-weight:600;cursor:pointer}
+
+  /* Layout */
+  .content{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:1024px){ .content{grid-template-columns:2fr 1fr} }
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+  .card-body{padding:1rem}
+  .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+
+  /* Tabs accesibles */
+  .tabs{
+    position:sticky; top:4.25rem; z-index:10;
+    display:flex; gap:.25rem; overflow-x:auto;
+    background:var(--color-surface); border:1px solid var(--color-border);
+    border-radius:.75rem; padding:.25rem; box-shadow:var(--shadow-md);
+    scroll-snap-type:x proximity;
+  }
+  .tab{
+    scroll-snap-align:start;
+    appearance:none; border:1px solid transparent; background:transparent;
+    color:var(--color-institutional); font-weight:700; cursor:pointer;
+    padding:.6rem .9rem; border-radius:.6rem; white-space:nowrap;
+  }
+  .tab:is(:hover,:focus-visible){ background:var(--color-surface-subtle); outline:none; }
+  .tab.is-active{ background:var(--color-primary); color:#fff; border-color:var(--color-primary); }
+  .panel[hidden]{display:none}
+
+  /* Aside sticky */
+  .aside{position:sticky;top:4.5rem;display:grid;gap:1rem;height:fit-content}
+
+  /* Listas y elementos */
+  ul{padding-left:1.2rem}
+  .list{display:grid;gap:.5rem}
+  .row{display:flex;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+  .kpis{display:flex;gap:1rem;flex-wrap:wrap;font-size:.95rem}
+  .badge{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:9999px;padding:.18rem .5rem;font-size:.75rem;font-weight:700;margin-right:.35rem}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Miga de pan">
+      <a href="academia_mentoria.html">Academia & Mentoría</a>
+      <span class="sep">/</span>
+      <span aria-current="page">Mentor: Dr. Luis Pérez</span>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" aria-label="Encabezado mentor">
+      <div class="hero-top">
+        <img class="avatar" alt="" />
+        <div>
+          <h1>Dr. Luis Pérez</h1>
+          <p class="muted">Estrategia & Operaciones — Ex-Consultor MBB</p>
+          <div class="chips" style="margin-top:.35rem">
+            <span class="chip">AgroTech</span>
+            <span class="chip">MVP/Tracción</span>
+            <span class="chip">B2B</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="kpis">
+          <span class="stat"><b>Sesiones:</b> 2h/sem</span>
+          <span class="stat"><b>Valoración:</b> ★ 4.8</span>
+          <span class="stat"><b>Idioma:</b> ES/EN</span>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <button class="ghost" onclick="history.back()">← Volver</button>
+          <a class="btn-primary" href="#">Solicitar mentoría</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contenido + Aside -->
+    <section class="content">
+      <article>
+        <!-- Tabs -->
+        <nav class="tabs" role="tablist" aria-label="Secciones del mentor">
+          <button class="tab is-active" role="tab" aria-selected="true" aria-controls="p-sobre" id="t-sobre">Sobre mí</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-experiencia" id="t-experiencia">Experiencia</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-sesiones" id="t-sesiones">Sesiones</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-resenas" id="t-resenas">Reseñas</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-recursos" id="t-recursos">Recursos</button>
+        </nav>
+
+        <!-- Paneles -->
+        <section id="p-sobre" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-sobre">
+          <h2>Sobre mí</h2>
+          <p>Ayudo a startups a escalar operaciones y alinear producto–mercado. He liderado proyectos de eficiencia, planificación OKRs y métricas de ejecución.</p>
+          <ul style="margin-top:.5rem">
+            <li>Temas: estrategia, ejecución, métricas, fundraising.</li>
+            <li>Mentorías 1:1 y workshops de foco y medición.</li>
+          </ul>
+        </section>
+
+        <section id="p-experiencia" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-experiencia" hidden>
+          <h2>Experiencia</h2>
+          <ul class="list">
+            <li><b>COO interino</b> en SaaS B2B (12 meses) — Implementación de playbooks y tableros de KPIs.</li>
+            <li><b>Consultor Sr.</b> (5 años) — Optimización de operaciones, pricing y GTM.</li>
+            <li><b>Asesor de inversión</b> — Due diligence de etapa temprana.</li>
+          </ul>
+          <div class="kpis" style="margin-top:.5rem">
+            <span class="badge">OKRs</span><span class="badge">Unit Economics</span><span class="badge">GTM</span>
+          </div>
+        </section>
+
+        <section id="p-sesiones" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-sesiones" hidden>
+          <h2>Sesiones</h2>
+          <ul class="list">
+            <li><b>Diagnóstico 60’:</b> mapa de riesgos, hipótesis y próximos pasos.</li>
+            <li><b>Operaciones 90’:</b> flujos, métricas, automatización ligera.</li>
+            <li><b>GTM 60’:</b> ICP, propuesta de valor, pricing y pipeline.</li>
+          </ul>
+          <p style="margin-top:.5rem"><a class="btn-primary" href="#">Solicitar mentoría</a></p>
+        </section>
+
+        <section id="p-resenas" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-resenas" hidden>
+          <h2>Reseñas</h2>
+          <ul class="list">
+            <li>“Muy claro y accionable. Salimos con un plan de 30 días.” — <span class="muted">AgroIA</span></li>
+            <li>“Nos ayudó a definir KPIs que sí mueven la aguja.” — <span class="muted">FinPay</span></li>
+          </ul>
+        </section>
+
+        <section id="p-recursos" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-recursos" hidden>
+          <h2>Recursos</h2>
+          <ul>
+            <li>Plantilla OKRs trimestrales (Sheets)</li>
+            <li>Checklist de métricas esenciales por etapa (PDF)</li>
+            <li>Playbook de reuniones de seguimiento (Doc)</li>
+          </ul>
+        </section>
+      </article>
+
+      <!-- Aside -->
+      <aside class="aside">
+        <div class="card">
+          <div class="card-header">Disponibilidad</div>
+          <div class="card-body">
+            <p class="muted">Próximas semanas (mock):</p>
+            <ul class="list">
+              <li>Mar 15: 10:00–12:00</li>
+              <li>Jue 17: 15:00–17:00</li>
+              <li>Sáb 19: 09:00–11:00</li>
+            </ul>
+            <a class="btn-primary" style="display:inline-block;margin-top:.75rem" href="#">Reservar</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Contacto</div>
+          <div class="card-body">
+            <p>luis.perez@aneir.do</p>
+            <p class="muted">Tiempo de respuesta: 24–48h</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- JS: Tabs accesibles (APG) -->
+  <script>
+    (function(){
+      const tabs = Array.from(document.querySelectorAll('[role="tablist"] [role="tab"]'));
+      const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+
+      function activate(i,{focus=false}={}){
+        tabs.forEach((t,idx)=>{
+          const on = idx===i;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          panels[idx].hidden = !on;
+          if(on && focus) t.focus();
+        });
+      }
+
+      tabs.forEach((t,i)=>{
+        t.addEventListener('click',()=>activate(i));
+        t.addEventListener('keydown',(e)=>{
+          let idx=tabs.indexOf(document.activeElement);
+          if(e.key==='ArrowRight'){e.preventDefault();idx=(idx+1)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='ArrowLeft'){e.preventDefault();idx=(idx-1+tabs.length)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='Home'){e.preventDefault();tabs[0].focus();}
+          else if(e.key==='End'){e.preventDefault();tabs[tabs.length-1].focus();}
+          else if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(idx);}
+        });
+      });
+
+      activate(0);
+    })();
+  </script>
+</body>
+</html>
