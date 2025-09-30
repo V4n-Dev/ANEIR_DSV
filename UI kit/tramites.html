@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Trámites | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== Tokens coherentes ===== */
+  :root{
+    --color-primary:#1f4fd6;
+    --color-accent:#14b8a6;
+    --color-institutional:#132e80;
+    --color-text:#1f2937;
+    --color-muted:#4b5563;
+    --color-bg:#e5e7eb;
+    --color-surface:#ffffff;
+    --color-surface-subtle:#f8fafc;
+    --color-border:#d1d5db;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+
+    /* estado */
+    --ok:#16a34a;      /* aprobado */
+    --warn:#f59e0b;    /* en revisión */
+    --error:#b91c1c;   /* observado */
+    --info:#0ea5e9;    /* enviado */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+  a{text-decoration:none;color:var(--color-primary)}
+  h1,h2{color:var(--color-institutional)}
+  .muted{color:var(--color-muted)}
+
+  /* Topbar */
+  .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* Main */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+
+  /* Toolbar filtros */
+  .toolbar{display:grid;gap:.75rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin-bottom:1rem}
+  .row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+  .input, select{border:1px solid var(--color-border);border-radius:.5rem;padding:.55rem .7rem;background:#fff}
+  .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.55rem .8rem;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+  .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+
+  /* Grid de trámites */
+  .grid{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:1100px){ .grid{grid-template-columns:2fr 1fr} }
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);overflow:hidden}
+  .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+  .card-body{padding:1rem}
+
+  /* Lista izquierda */
+  .list{display:grid;gap:.75rem}
+  .item{display:flex;justify-content:space-between;gap:.75rem;align-items:center;border:1px solid var(--color-border);border-radius:.65rem;padding:.75rem;background:#fff}
+  .item h3{font-size:1rem}
+  .status{display:inline-flex;align-items:center;gap:.4rem;font-weight:700}
+  .dot{width:10px;height:10px;border-radius:9999px;background:var(--info)}
+  .s-ok .dot{background:var(--ok)}
+  .s-warn .dot{background:var(--warn)}
+  .s-err .dot{background:var(--error)}
+  .meta{font-size:.9rem;color:var(--color-muted)}
+
+  /* Panel derecho (detalle + wizard simulado) */
+  .aside{position:sticky;top:4.5rem;height:fit-content;display:grid;gap:1rem}
+
+  /* Stepper accesible (inspirado en steppers/wizard) */
+  .stepper{display:flex;gap:.5rem;overflow-x:auto;padding:.5rem;border:1px solid var(--color-border);border-radius:.75rem;background:var(--color-surface-subtle)}
+  .step{display:flex;align-items:center;gap:.45rem;padding:.45rem .6rem;border-radius:.6rem;border:1px solid transparent;white-space:nowrap}
+  .step[aria-current="step"]{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+  .step .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:9999px;background:#e5e7eb;color:#111827;font-weight:800}
+  .step[aria-current="step"] .n{background:#fff;color:var(--color-primary)}
+
+  .panel[hidden]{display:none}
+
+  /* Timeline de estado */
+  .timeline{display:grid;gap:.75rem;border-left:2px solid #e5e7eb;padding-left:1rem;margin-left:.35rem}
+  .tl{position:relative}
+  .tl::before{content:"";position:absolute;left:-1.2rem;top:.2rem;width:.75rem;height:.75rem;border-radius:9999px;background:var(--info);outline:3px solid #fff;box-shadow:0 0 0 2px #e5e7eb}
+  .tl.ok::before{background:var(--ok)}
+  .tl.warn::before{background:var(--warn)}
+  .tl.err::before{background:var(--error)}
+  .tl time{font-size:.85rem;color:var(--color-muted)}
+
+  /* Subida de documentos (simulada, sin JS de backend) */
+  .upload{display:grid;gap:.5rem;border:1px dashed var(--color-border);border-radius:.6rem;padding:1rem;background:#fff}
+  .hint{font-size:.9rem;color:var(--color-muted)}
+  .file-row{display:flex;gap:.5rem;align-items:center;justify-content:space-between;border:1px solid var(--color-border);border-radius:.5rem;padding:.5rem;background:#fff}
+  .file-row .badge{background:#eef2ff;color:#3730a3;border-radius:9999px;padding:.15rem .45rem;font-size:.75rem;font-weight:700}
+
+  /* Tabla compacta de requisitos */
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:.55rem;border-bottom:1px solid var(--color-border);text-align:left}
+  thead th{position:sticky;top:0;background:var(--color-surface-subtle);z-index:1}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <h1>Trámites</h1>
+    <p class="muted" style="margin:.25rem 0 1rem">Gestiona tus solicitudes y envíos en la ventanilla única. (datos estáticos demo)</p>
+
+    <!-- Filtros -->
+    <section class="toolbar" aria-label="Filtros de trámites">
+      <div class="row">
+        <input class="input" placeholder="Buscar por nombre o folio…" aria-label="Buscar trámite">
+        <select class="input" aria-label="Estado">
+          <option>Estado: Todos</option><option>Enviado</option><option>En revisión</option><option>Observado</option><option>Aprobado</option>
+        </select>
+        <select class="input" aria-label="Tipo">
+          <option>Tipo: Todos</option><option>Registro</option><option>Permiso</option><option>Certificado</option>
+        </select>
+        <button class="btn">Limpiar</button>
+        <button class="btn btn-primary">Aplicar</button>
+        <span class="chip" style="margin-left:auto">RD</span>
+        <span class="chip">B2B</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <!-- Columna izquierda: lista -->
+      <article class="card" aria-labelledby="l-title">
+        <div class="card-header" id="l-title">Tus trámites</div>
+        <div class="card-body">
+          <div class="list" role="list">
+            <!-- item 1 -->
+            <div class="item s-warn" role="listitem">
+              <div>
+                <h3>Registro de empresa (RNC)</h3>
+                <div class="meta">Folio: RNC-2025-0187 · Actualizado: 20 Sep</div>
+              </div>
+              <div class="status" aria-label="En revisión"><span class="dot"></span>En revisión</div>
+              <div style="display:flex;gap:.4rem">
+                <a class="btn" href="tramite_detalle.html">Ver</a>
+                <a class="btn btn-primary" href="#wizard">Continuar</a>
+              </div>
+            </div>
+            <!-- item 2 -->
+            <div class="item s-err" role="listitem">
+              <div>
+                <h3>Permiso sanitario</h3>
+                <div class="meta">Folio: SAN-2025-0042 · Actualizado: 12 Sep</div>
+              </div>
+              <div class="status" aria-label="Observado"><span class="dot"></span>Observado</div>
+              <div style="display:flex;gap:.4rem">
+                <a class="btn" href="tramite_detalle.html">Ver</a>
+                <a class="btn btn-primary" href="#wizard">Subsanar</a>
+              </div>
+            </div>
+            <!-- item 3 -->
+            <div class="item s-ok" role="listitem">
+              <div>
+                <h3>Certificado de no objeción</h3>
+                <div class="meta">Folio: CNO-2025-0110 · Actualizado: 05 Sep</div>
+              </div>
+              <div class="status" aria-label="Aprobado"><span class="dot"></span>Aprobado</div>
+              <div style="display:flex;gap:.4rem">
+                <a class="btn" href="tramite_detalle.html">Ver</a>
+                <a class="btn" href="#">Descargar</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Columna derecha: detalle + wizard simulado -->
+      <aside class="aside">
+        <!-- Detalle / Timeline -->
+        <div class="card" id="detalle" aria-labelledby="d-title">
+          <div class="card-header" id="d-title">Detalle: Registro de empresa (RNC)</div>
+          <div class="card-body">
+            <div class="timeline" aria-label="Línea de tiempo del trámite">
+              <div class="tl ok">
+                <strong>Enviado</strong> <time>01 Sep, 10:22</time>
+                <div class="muted">Recibimos tu solicitud y documentos.</div>
+              </div>
+              <div class="tl warn">
+                <strong>En revisión</strong> <time>05 Sep, 16:10</time>
+                <div class="muted">Analizando requisitos. Tiempo estimado: 5–7 días.</div>
+              </div>
+              <div class="tl err">
+                <strong>Observado</strong> <time>12 Sep, 09:05</time>
+                <div class="muted">Falta constancia bancaria actualizada. Re-subir documento.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wizard (stepper accesible) -->
+        <div class="card" id="wizard" aria-labelledby="w-title">
+          <div class="card-header" id="w-title">Completar requerimientos</div>
+          <div class="card-body">
+            <!-- Stepper (APG/Material: secuencia lógica) -->
+            <nav class="stepper" role="navigation" aria-label="Progreso de pasos">
+              <a href="#p1" class="step" aria-current="step"><span class="n">1</span> Datos generales</a>
+              <a href="#p2" class="step"><span class="n">2</span> Documentos</a>
+              <a href="#p3" class="step"><span class="n">3</span> Verificación</a>
+              <a href="#p4" class="step"><span class="n">4</span> Envío</a>
+            </nav>
+
+            <!-- Paso 1: Datos generales (estático, sin formularios complejos) -->
+            <section id="p1" class="panel" aria-labelledby="t1">
+              <h2 id="t1" style="font-size:1.1rem;margin:.5rem 0">1) Datos generales</h2>
+              <table aria-label="Resumen de datos">
+                <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+                <tbody>
+                  <tr><td>Razón social</td><td>AgroIA SRL</td></tr>
+                  <tr><td>Representante</td><td>María López</td></tr>
+                  <tr><td>Actividad</td><td>Servicios de software</td></tr>
+                </tbody>
+              </table>
+              <div class="row" style="margin-top:.6rem">
+                <a class="btn" href="#">Editar (demo)</a>
+                <a class="btn btn-primary" href="#p2">Continuar</a>
+              </div>
+            </section>
+
+            <!-- Paso 2: Documentos (subida simulada, siguiendo pautas GOV.UK/ONS)-->
+            <section id="p2" class="panel" hidden aria-labelledby="t2">
+              <h2 id="t2" style="font-size:1.1rem;margin:.5rem 0">2) Documentos</h2>
+              <div class="upload" role="region" aria-label="Cargar documentos">
+                <div>
+                  <strong>Constancia bancaria</strong>
+                  <p class="hint">Acepta: PDF, JPG, PNG. Máx. 10 MB. (Consejo: permite varios tipos; reduce tamaño automáticamente si es posible). </p>
+                </div>
+                <div class="row">
+                  <label class="btn" for="f1">Seleccionar archivo</label>
+                  <input id="f1" type="file" accept=".pdf,.jpg,.jpeg,.png" hidden>
+                  <button class="btn">Quitar</button>
+                  <button class="btn btn-primary">Subir (demo)</button>
+                </div>
+                <div class="file-row">
+                  <span>constancia_banco_sep.pdf</span>
+                  <span class="badge">Pendiente</span>
+                </div>
+              </div>
+
+              <div class="upload" style="margin-top:.75rem" role="region" aria-label="Cargar documento de identidad">
+                <div>
+                  <strong>Documento de identidad</strong>
+                  <p class="hint">Acepta: PDF/JPG/PNG · Máx. 10 MB.</p>
+                </div>
+                <div class="row">
+                  <label class="btn" for="f2">Seleccionar archivo</label>
+                  <input id="f2" type="file" accept=".pdf,.jpg,.jpeg,.png" hidden>
+                  <button class="btn">Quitar</button>
+                  <button class="btn btn-primary">Subir (demo)</button>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:.75rem">
+                <a class="btn" href="#p1">Atrás</a>
+                <a class="btn btn-primary" href="#p3">Continuar</a>
+              </div>
+            </section>
+
+            <!-- Paso 3: Verificación -->
+            <section id="p3" class="panel" hidden aria-labelledby="t3">
+              <h2 id="t3" style="font-size:1.1rem;margin:.5rem 0">3) Verificación</h2>
+              <p class="muted">Revisa que la información y archivos sean correctos antes de enviar.</p>
+              <ul style="margin-top:.35rem;padding-left:1.2rem">
+                <li>Datos coinciden con documentos</li>
+                <li>Archivos legibles y vigentes</li>
+                <li>Contactos actualizados</li>
+              </ul>
+              <div class="row" style="margin-top:.75rem">
+                <a class="btn" href="#p2">Atrás</a>
+                <a class="btn btn-primary" href="#p4">Continuar</a>
+              </div>
+            </section>
+
+            <!-- Paso 4: Envío -->
+            <section id="p4" class="panel" hidden aria-labelledby="t4">
+              <h2 id="t4" style="font-size:1.1rem;margin:.5rem 0">4) Envío</h2>
+              <p>Al enviar, tu trámite quedará <b>En revisión</b>. Podrás seguir el estado en la línea de tiempo y recibir notificaciones.</p>
+              <div class="row" style="margin-top:.75rem">
+                <a class="btn" href="#p3">Atrás</a>
+                <a class="btn btn-primary" href="#">Enviar (demo)</a>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- Requisitos (tabla compacta) -->
+        <div class="card" aria-labelledby="req-title">
+          <div class="card-header" id="req-title">Requisitos del trámite</div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Requisito</th><th>Estado</th><th>Notas</th></tr></thead>
+              <tbody>
+                <tr><td>Constancia bancaria</td><td>Pendiente</td><td>Debe ser ≤ 30 días</td></tr>
+                <tr><td>Documento identidad</td><td>Subido</td><td>Vigencia OK</td></tr>
+                <tr><td>Formulario ANEIR-01</td><td>Completado</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- JS mínimo para cambiar de paso (sin dependencias) -->
+  <script>
+    (function(){
+      const steps = Array.from(document.querySelectorAll('.stepper .step'));
+      const panels = ['#p1','#p2','#p3','#p4'].map(id => document.querySelector(id));
+      function show(id){
+        panels.forEach(p => p.hidden = (p.id !== id.substring(1)));
+        steps.forEach(s => s.setAttribute('aria-current', s.getAttribute('href')===id ? 'step':'false'));
+        // scroll suave al inicio del card
+        document.querySelector('#wizard').scrollIntoView({behavior:'smooth',block:'start'});
+      }
+      steps.forEach(s => s.addEventListener('click', (e)=>{ e.preventDefault(); show(s.getAttribute('href')); }));
+      document.querySelectorAll('a[href^="#p"]').forEach(a => a.addEventListener('click', (e)=>{ e.preventDefault(); show(a.getAttribute('href')); }));
+      // estado inicial
+      show('#p1');
+    })();
+  </script>
+</body>
+</html>

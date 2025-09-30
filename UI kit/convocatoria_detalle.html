@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convocatoria – Capital Semilla 2025 | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ====== TOKENS (contraste mejorado, coherente con el resto) ====== */
+  :root{
+    --color-primary:#1f4fd6;           /* azul primario (más contraste)  */
+    --color-accent:#14b8a6;            /* acento turquesa                */
+    --color-institutional:#132e80;     /* títulos/brand más oscuro       */
+    --color-text-dark:#1f2937;
+    --color-text-muted:#4b5563;
+    --color-surface:#ffffff;
+    --color-surface-subtle:#f8fafc;    /* superficies suaves              */
+    --color-background:#e5e7eb;
+    --color-border:#d1d5db;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:Inter,system-ui,sans-serif;
+    color:var(--color-text-dark);
+    background:var(--color-background);
+    line-height:1.6;
+    display:flex;
+  }
+  a{text-decoration:none;color:var(--color-primary)}
+  h1,h2{color:var(--color-institutional)}
+
+  /* ====== Topbar ====== */
+  .topbar{
+    position:fixed;top:0;left:0;width:100%;
+    background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;
+    display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem
+  }
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-background);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* ====== Sidebar ====== */
+  .sidebar{
+    position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);
+    background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem
+  }
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text-dark)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* ====== Main ====== */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem);}
+
+  /* ====== Hero ====== */
+  .hero{
+    background:var(--color-surface);border:1px solid var(--color-border);
+    border-radius:.75rem;box-shadow:var(--shadow-md);
+    padding:1.25rem;margin-bottom:1rem;display:grid;gap:1rem
+  }
+  .hero-top{display:flex;gap:1rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+  .chips{display:flex;gap:.5rem;flex-wrap:wrap}
+  .chip{background:var(--color-background);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+  .stats{display:flex;gap:1rem;flex-wrap:wrap}
+  .stat{background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:.6rem;padding:.6rem .8rem;min-width:140px}
+  .btn-primary{background:var(--color-primary);color:#fff;border:0;border-radius:.5rem;padding:.6rem 1rem;font-weight:700;cursor:pointer}
+  .ghost{background:transparent;border:1px solid var(--color-border);border-radius:.5rem;padding:.5rem .9rem;font-weight:600;cursor:pointer}
+  .badge{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:9999px;padding:.18rem .5rem;font-size:.75rem;font-weight:700;margin-right:.35rem}
+  .muted{color:var(--color-text-muted)}
+
+  /* ====== Layout contenido + aside ====== */
+  .content{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:1024px){ .content{grid-template-columns:3fr 1fr} }
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+  .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+  .card-body{padding:1rem}
+  .aside-sticky{position:sticky;top:4.5rem;display:grid;gap:1rem}
+
+  /* ====== Tabs accesibles (sticky + scrollable) ====== */
+  .tabs{
+    position:sticky; top:4.25rem; z-index:10;
+    display:flex; gap:.25rem; overflow-x:auto;
+    background:var(--color-surface); border:1px solid var(--color-border);
+    border-radius:.75rem; padding:.25rem; box-shadow:var(--shadow-md);
+    scroll-snap-type:x proximity;
+  }
+  .tab{
+    scroll-snap-align:start;
+    appearance:none; border:1px solid transparent; background:transparent;
+    color:var(--color-institutional); font-weight:700; cursor:pointer;
+    padding:.6rem .9rem; border-radius:.6rem; white-space:nowrap;
+  }
+  .tab:is(:hover,:focus-visible){ background:var(--color-surface-subtle); outline:none; }
+  .tab.is-active{
+    background:var(--color-primary); color:#fff; border-color:var(--color-primary);
+  }
+
+  /* Paneles */
+  .tab-panel{
+    background:var(--color-surface); border:1px solid var(--color-border);
+    border-radius:.75rem; box-shadow:var(--shadow-md);
+    padding:1rem; margin-top:.75rem;
+  }
+  .tab-panel[hidden]{display:none}
+  ul{padding-left:1.2rem}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- HERO -->
+    <section class="hero" aria-label="Encabezado de convocatoria">
+      <div class="hero-top">
+        <div>
+          <h1>Fondo Capital Semilla 2025</h1>
+          <div class="chips" style="margin-top:.35rem">
+            <span class="chip">Ticket: US$15,000</span>
+            <span class="chip">Vertical: Multisector</span>
+            <span class="chip">Modalidad: No reembolsable</span>
+          </div>
+          <p class="muted" style="margin-top:.35rem">Organiza: ANEIR en alianza con Academia & MICM</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>Cierra:</strong><br> 30 Nov, 23:59</div>
+          <div class="stat"><strong>Estado:</strong><br> Abierta</div>
+          <div class="stat"><strong>IA Score:</strong><br> 8/10</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="ghost" onclick="history.back()">← Volver</button>
+        <a class="btn-primary" href="postulacion.html">Postular ahora</a>
+      </div>
+    </section>
+
+    <!-- CONTENIDO + ASIDE -->
+    <section class="content">
+      <!-- Columna principal -->
+      <article>
+        <!-- ====== TABS ====== -->
+        <nav class="tabs" role="tablist" aria-label="Secciones de la convocatoria">
+          <button class="tab is-active" role="tab" aria-selected="true" aria-controls="p-resumen" id="t-resumen">Resumen</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-requisitos" id="t-requisitos">Requisitos</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-cronograma" id="t-cronograma">Cronograma</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-documentos" id="t-documentos">Documentos</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-faq" id="t-faq">FAQ</button>
+        </nav>
+
+        <!-- ====== PANELES ====== -->
+        <section id="p-resumen" class="tab-panel" role="tabpanel" tabindex="0" aria-labelledby="t-resumen">
+          <h2>Resumen</h2>
+          <p>Esta convocatoria entrega <b>capital semilla de US$15,000</b> a startups en etapa <b>Idea/MVP/Tracción</b> con foco en impacto productivo y formalización. Incluye mentorías, acompañamiento en trámites y acceso a inversionistas verificados.</p>
+          <ul style="margin-top:.5rem">
+            <li>Objetivo: acelerar validación de mercado y primeras ventas.</li>
+            <li>Beneficios: capital, mentoría 1:1, ventanilla única, visibilidad en Marketplace.</li>
+            <li>Duración del programa: 4–6 meses.</li>
+          </ul>
+        </section>
+
+        <section id="p-requisitos" class="tab-panel" role="tabpanel" tabindex="0" aria-labelledby="t-requisitos" hidden>
+          <h2>Requisitos</h2>
+          <ul>
+            <li>Startup registrada o en proceso de registro (Ventanilla Única activa).</li>
+            <li>Equipo mínimo de 2 personas (al menos 1 con dedicación parcial).</li>
+            <li>Sectores elegibles: AgroTech, FinTech, HealthTech, EdTech, Energía, Turismo, Manufactura.</li>
+            <li>Compromiso de reportes mensuales de KPIs.</li>
+          </ul>
+        </section>
+
+        <section id="p-cronograma" class="tab-panel" role="tabpanel" tabindex="0" aria-labelledby="t-cronograma" hidden>
+          <h2>Cronograma</h2>
+          <ul>
+            <li>Apertura: 01 Sep</li>
+            <li>Webinar informativo: 10 Oct</li>
+            <li>Cierre: 30 Nov</li>
+            <li>Resultados preliminares: 15 Dic</li>
+            <li>Inicio de programa: 10 Ene</li>
+          </ul>
+        </section>
+
+        <section id="p-documentos" class="tab-panel" role="tabpanel" tabindex="0" aria-labelledby="t-documentos" hidden>
+          <h2>Documentos</h2>
+          <ul>
+            <li>Pitch Deck (PDF, 12–15 diapositivas)</li>
+            <li>Video de 2–3 min (enlace)</li>
+            <li>RNC/Registro (si aplica) o carta de intención de formalización</li>
+          </ul>
+        </section>
+
+        <section id="p-faq" class="tab-panel" role="tabpanel" tabindex="0" aria-labelledby="t-faq" hidden>
+          <h2>Preguntas Frecuentes</h2>
+          <p><b>¿Puedo postular si no tengo empresa registrada?</b><br>
+          Sí. Debes activar la <i>Ventanilla Única</i> desde tu dashboard y completar el registro durante el programa.</p>
+          <p style="margin-top:.5rem"><b>¿Qué se evalúa?</b><br>
+          Equipo, problema/solución, validación, tracción (si aplica), potencial de impacto y factibilidad.</p>
+          <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+            <a class="btn-primary" href="postulacion.html">Postular ahora</a>
+            <a class="ghost" href="convocatorias.html">Ver más convocatorias</a>
+          </div>
+        </section>
+      </article>
+
+      <!-- Aside derecho (sticky) -->
+      <aside class="aside-sticky">
+        <div class="card">
+          <div class="card-header">Tu Elegibilidad (IA)</div>
+          <div class="card-body">
+            <p class="muted">Con base en tu perfil:</p>
+            <p><span class="badge">Elegible</span> IA Score: <b>8/10</b></p>
+            <ul style="margin-top:.5rem">
+              <li>Sector coincide (Tecnología/AgroTech).</li>
+              <li>Etapa: MVP/Tracción compatible.</li>
+              <li>Necesidad de capital semilla declarada.</li>
+            </ul>
+            <a class="btn-primary" style="display:inline-block;margin-top:.75rem" href="postulacion.html">Postular</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Fechas Clave</div>
+          <div class="card-body">
+            <p>Webinar: <b>10 Oct</b></p>
+            <p>Cierre: <b>30 Nov</b></p>
+            <p>Resultados: <b>15 Dic</b></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Contacto</div>
+          <div class="card-body">
+            <p class="muted">Soporte de Convocatorias</p>
+            <p>convocatorias@aneir.do</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- ====== JS: Tabs accesibles (manual activation) ====== -->
+  <script>
+    (function(){
+      const tablist = document.querySelector('[role="tablist"]');
+      const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+      const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+
+      function activateTab(index, {focus=true} = {}){
+        tabs.forEach((t,i) => {
+          const active = i === index;
+          t.classList.toggle('is-active', active);
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+          panels[i].hidden = !active;
+          if(active && focus) t.focus();
+        });
+      }
+
+      // Click activa
+      tabs.forEach((t, i) => {
+        t.addEventListener('click', () => activateTab(i, {focus:false}));
+        // Teclado (Flechas, Home/End, Enter/Espacio)
+        t.addEventListener('keydown', (e) => {
+          const key = e.key;
+          let idx = tabs.indexOf(document.activeElement);
+          if(key === 'ArrowRight'){ e.preventDefault(); idx = (idx+1)%tabs.length; tabs[idx].focus(); }
+          else if(key === 'ArrowLeft'){ e.preventDefault(); idx = (idx-1+tabs.length)%tabs.length; tabs[idx].focus(); }
+          else if(key === 'Home'){ e.preventDefault(); tabs[0].focus(); }
+          else if(key === 'End'){ e.preventDefault(); tabs[tabs.length-1].focus(); }
+          else if(key === 'Enter' || key === ' '){ e.preventDefault(); activateTab(idx, {focus:false}); }
+        });
+      });
+
+      // Estado inicial
+      activateTab(0, {focus:false});
+    })();
+  </script>
+</body>
+</html>

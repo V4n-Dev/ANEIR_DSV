@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Plataforma Digital Silicon Valley (ANEIR)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ---------------------------------- */
+        /* 1. PALETA DE COLORES (Tokens de Diseño) */
+        /* ---------------------------------- */
+        :root {
+            /* Colores Institucionales y de Interfaz */
+            --color-primary: #2563eb;    /* Acción Primaria (CTA) [cite: 85] */
+            --color-accent: #14b8a6;     /* Éxito / Acento Secundario [cite: 85] */
+            --color-institutional: #1e3a8a; /* Institucional / Títulos */
+            
+            /* Colores Neutros y Texto */
+            --color-text-dark: #1f2937;  /* Texto Principal [cite: 85] */
+            --color-background-light: #e5e7eb; /* Fondo de secciones / Light Neutral */
+            --color-white: #ffffff;
+            --color-gray-border: #d1d5db;
+            
+            /* Sombra y Espaciado */
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --spacing-unit: 1rem; /* 16px */
+        }
+
+        /* ---------------------------------- */
+        /* 2. ESTILOS GENERALES Y RESET */
+        /* ---------------------------------- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif; /* Tipografía [cite: 84] */
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--color-primary);
+        }
+
+        h1, h2 {
+            color: var(--color-institutional);
+            margin-bottom: var(--spacing-unit);
+        }
+
+        /* Botón Primario (CTA)  */
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            display: inline-block;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8; /* Un tono más oscuro */
+        }
+
+        /* ---------------------------------- */
+        /* 3. ESTRUCTURA DE LAYOUT: TOPBAR (Fija) */
+        /* ---------------------------------- */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--color-white);
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem var(--spacing-unit);
+        }
+
+        .topbar-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-institutional);
+        }
+
+        .topbar-nav {
+            display: none; /* Ocultar nav principal en móvil */
+        }
+        
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        /* Simulación de íconos para acciones (Notificaciones, Perfil) */
+        .icon-btn {
+            width: 2rem;
+            height: 2rem;
+            background-color: var(--color-background-light);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--color-text-dark);
+        }
+
+        /* ---------------------------------- */
+        /* 4. ESTRUCTURA DE LAYOUT: CONTENIDO PRINCIPAL (Móvil First) */
+        /* ---------------------------------- */
+        .main-content {
+            padding: 5rem 1rem 4rem 1rem; /* Padding superior para Topbar, inferior para Bottom Nav */
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+        
+        /* Grid de Tarjetas (Móvil: 1 columna) [cite: 172] */
+        .card-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        /* ---------------------------------- */
+        /* 5. COMPONENTES: CARD  */
+        /* ---------------------------------- */
+        .card {
+            background-color: var(--color-white);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-left: 5px solid var(--color-primary); /* Para destacar la info */
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .card-body p {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Estilo para Checklist (Siguientes pasos) [cite: 173v] */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+        .checklist-item.done {
+            color: var(--color-accent);
+        }
+        .checklist-item .checkbox {
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--color-primary);
+            border-radius: 3px;
+            margin-right: 0.5rem;
+            background-color: var(--color-white);
+            display: inline-block;
+        }
+        .checklist-item.done .checkbox {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+
+        /* Etiqueta / Chip  */
+        .chip {
+            background-color: var(--color-background-light);
+            color: var(--color-text-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        /* ---------------------------------- */
+        /* 6. ESTRUCTURA DE LAYOUT: BOTTOM NAV (Móvil)  */
+        /* ---------------------------------- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--color-white);
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+            z-index: 999;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+        }
+        .nav-item {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--color-text-dark);
+            padding: 0.25rem;
+        }
+        .nav-item.active {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+        .nav-item-icon {
+            font-size: 1.25rem;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+        
+        /* ---------------------------------- */
+        /* 7. ADAPTACIÓN A DESKTOP (Breakpoints) [cite: 153] */
+        /* ---------------------------------- */
+        @media (min-width: 768px) {
+            
+            /* Ocultar Bottom Nav en Tablet/Desktop */
+            .bottom-nav {
+                display: none;
+            }
+            
+            /* Mostrar Topbar Nav en Tablet/Desktop */
+            .topbar-nav {
+                display: flex;
+                gap: 1.5rem;
+            }
+            .topbar-nav a {
+                color: var(--color-text-dark);
+                font-weight: 600;
+                padding: 0.5rem 0;
+            }
+
+            /* Habilitar Sidebar en Desktop */
+            body {
+                display: flex;
+            }
+
+            /* Estilo Sidebar contextual (Desktop) [cite: 163] */
+            .sidebar {
+                position: fixed;
+                top: 3.5rem; /* Debajo del Topbar */
+                left: 0;
+                width: 14rem;
+                height: calc(100vh - 3.5rem);
+                background-color: var(--color-white);
+                padding: 2rem 1rem;
+                border-right: 1px solid var(--color-gray-border);
+            }
+            .sidebar-nav a {
+                display: block;
+                padding: 0.75rem 0;
+                color: var(--color-text-dark);
+                font-size: 0.9rem;
+            }
+            .sidebar-nav a.active {
+                color: var(--color-primary);
+                font-weight: 700;
+            }
+
+            /* Ajustar contenido principal para Sidebar */
+            .main-content {
+                padding: 5rem 2rem 2rem calc(14rem + 2rem); /* Offset por Sidebar + padding */
+                flex-grow: 1;
+            }
+
+            /* Grid de Tarjetas (Desktop: 2 columnas) [cite: 172] */
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ---------------------------------- */
+        /* 8. ADAPTACIÓN A DESKTOP GRANDE (Breakpoints) [cite: 153] */
+        /* ---------------------------------- */
+        @media (min-width: 1200px) {
+            /* Grid de Tarjetas (Large Desktop: 3 columnas) [cite: 172] */
+            .card-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .btn-secondary {
+            background-color: #1d4ed8;
+            padding: 15px;
+            color: white;
+            border-radius: 10px;
+        }
+        .btn-secondary:hover {
+            background-color:  var(--color-primary);
+        }
+    </style>
+    <link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <h1>¡Bienvenida, Ana! 👋</h1>
+            <p>Emprendedora etapa idea | Tecnología</p>
+            <a href="Ui user/perfil.html" class="btn-secondary" style=" margin-top: 0.5rem; display: inline-block;">Perfil inversionista</a>
+        </header>
+
+        <section class="card-grid">
+            <!-- Calendario / Próximas Fechas -->
+<div class="card">
+  <div class="card-header">
+    <span>Calendario / Próximas fechas</span>
+    <span class="chip">Esta semana</span>
+  </div>
+  <div class="card-body">
+    <p style="display:flex;justify-content:space-between;margin-bottom:.75rem;">
+      <span>12 Oct — Mentoría con Dr. Pérez</span>
+      <span class="chip" style="background:#e0f2fe;">2h reservadas</span>
+    </p>
+    <p style="display:flex;justify-content:space-between;margin-bottom:.75rem;">
+      <span>30 nov — Cierre Convocatoria “Capital Semilla”</span>
+      <span class="chip" style="background:#ffedd5;">Cierra 23:59</span>
+    </p>
+    <p style="display:flex;justify-content:space-between;margin-bottom:.75rem;">
+      <span>2 dic — Entrega Pitch Video</span>
+      <span class="chip" style="background:#dcfce7;">Recordatorio</span>
+    </p>
+
+    <hr style="margin: 1rem 0; border-color: var(--color-background-light);">
+
+    <!-- Mini agenda estática (mock) -->
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:.35rem;font-size:.85rem;">
+      <div style="text-align:center;color:#6b7280;">L</div>
+      <div style="text-align:center;color:#6b7280;">M</div>
+      <div style="text-align:center;color:#6b7280;">M</div>
+      <div style="text-align:center;color:#6b7280;">J</div>
+      <div style="text-align:center;color:#6b7280;">V</div>
+      <div style="text-align:center;color:#6b7280;">S</div>
+      <div style="text-align:center;color:#6b7280;">D</div>
+
+      <!-- Semana (relleno estático de ejemplo) -->
+      <div style="height:2.2rem;border:1px solid var(--color-gray-border);border-radius:.4rem;"></div>
+      <div style="height:2.2rem;border:1px solid var(--color-gray-border);border-radius:.4rem;background:#dcfce7;">2</div>
+      <div style="height:2.2rem;border:1px solid var(--color-gray-border);border-radius:.4rem;"></div>
+      <div style="height:2.2rem;border:1px solid var(--color-gray-border);border-radius:.4rem;"></div>
+      <div style="height:2.2rem;border:1px solid var(--color-gray-border);border-radius:.4rem;"></div>
+      <div style="height:2.2rem;border:1px solid var(--color-gray-border);border-radius:.4rem;"></div>
+      <div style="height:2.2rem;border:1px solid var(--color-gray-border);border-radius:.4rem;background:#ffedd5;">12</div>
+    </div>
+
+    <a href="#" style="display:inline-block;margin-top:1rem;">Ver agenda completa</a>
+  </div>
+</div>
+
+            <!-- Alertas del sistema -->
+<div class="card">
+  <div class="card-header">
+    <span>Alertas</span>
+    <span class="chip">4</span>
+  </div>
+
+  <div class="card-body" style="display:grid;gap:.75rem">
+    <!-- Éxito -->
+    <div class="alert success" role="status" aria-live="polite"
+         style="display:flex;align-items:flex-start;gap:.6rem;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:.5rem;padding:.6rem .8rem">
+      <div class="dot" style="width:.6rem;height:.6rem;border-radius:9999px;background:#16a34a;margin-top:.35rem"></div>
+      <div>
+        <strong>Registro mercantil aprobado.</strong>
+        <div style="color:#065f46">Tu trámite pasó a <b>Estado: Aprobado</b>. Se generará constancia en 24–48h.</div>
+      </div>
+    </div>
+
+    <!-- Informativa -->
+    <div class="alert info" role="status" aria-live="polite"
+         style="display:flex;align-items:flex-start;gap:.6rem;border:1px solid #bae6fd;background:#eff6ff;border-radius:.5rem;padding:.6rem .8rem">
+      <div class="dot" style="width:.6rem;height:.6rem;border-radius:9999px;background:#2563eb;margin-top:.35rem"></div>
+      <div>
+        <strong>Nueva convocatoria sugerida.</strong>
+        <div style="color:#1e3a8a">“Fondo Capital Semilla 2025” coincide con tu perfil (IA Score 8/10).</div>
+      </div>
+    </div>
+
+    <!-- Advertencia -->
+    <div class="alert warning" role="status" aria-live="polite"
+         style="display:flex;align-items:flex-start;gap:.6rem;border:1px solid #fed7aa;background:#fff7ed;border-radius:.5rem;padding:.6rem .8rem">
+      <div class="dot" style="width:.6rem;height:.6rem;border-radius:9999px;background:#f59e0b;margin-top:.35rem"></div>
+      <div>
+        <strong>Pitch video pendiente.</strong>
+        <div style="color:#7c2d12">Sube el enlace antes del <b>20 Oct</b> para completar el 60% del onboarding.</div>
+      </div>
+    </div>
+
+    <!-- Crítica (usa role="alert") -->
+    <div class="alert danger" role="alert" aria-live="assertive"
+         style="display:flex;align-items:flex-start;gap:.6rem;border:1px solid #fecaca;background:#fef2f2;border-radius:.5rem;padding:.6rem .8rem">
+      <div class="dot" style="width:.6rem;height:.6rem;border-radius:9999px;background:#dc2626;margin-top:.35rem"></div>
+      <div>
+        <strong>Verificación AML requerida.</strong>
+        <div style="color:#7f1d1d">Falta confirmar identidad para habilitar acceso a inversionistas verificados.</div>
+      </div>
+    </div>
+
+    <!-- Acciones secundarias -->
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem">
+      <button class="btn-ghost" style="padding:.5rem .8rem;border:1px solid var(--color-gray-border);border-radius:.5rem">
+        Marcar todas como leídas
+      </button>
+      <a href="#" style="align-self:center">Ver centro de notificaciones</a>
+    </div>
+  </div>
+</div>
+
+            
+            <div class="card" style="border-left-color: var(--color-accent);">
+                <div class="card-header">
+                    <span>Siguientes Pasos (Activación)</span>
+                    <span class="chip" style="background-color: var(--color-accent); color: var(--color-white);">40%</span>
+                </div>
+                <div class="card-body">
+                    <p class="checklist-item done"><span class="checkbox"></span>Completar perfil de proyecto (Hecho)</p>
+                    <p class="checklist-item"><span class="checkbox"></span>Subir Pitch Deck / Video [cite: 33]</p>
+                    <p class="checklist-item"><span class="checkbox"></span>Registrar nombre comercial (Ventanilla Única)</p>
+                    <a href="#" class="btn-primary" style="margin-top: 1rem; width: 100%; text-align: center;">Continuar Onboarding</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Convocatorias para ti (IA)</span>
+                </div>
+                <div class="card-body">
+                    <p>Fondo Capital Semilla 2025</p>
+                    <p style="font-size: 0.85rem; color: gray;">$15,000 USD | Cierra 30/Nov</p>
+                    <span class="chip">Elegible</span>
+                    <span class="chip" style="background-color: var(--color-institutional); color: var(--color-white);">IA Score: 8/10</span>
+                    <hr style="margin: 1rem 0; border-color: var(--color-background-light);">
+                    <a href="#">Ver detalles y postular</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Mentoría sugerida (IA)</span>
+                </div>
+                <div class="card-body">
+                    <p>Dr. Pérez: Formalización Legal</p>
+                    <p style="font-size: 0.85rem; color: gray;">Disponible el 12/Oct (2h/sem)</p>
+                    <span class="chip">Legal/Fiscal</span>
+                    <span class="chip">15 años exp.</span>
+                    <hr style="margin: 1rem 0; border-color: var(--color-background-light);">
+                    <a href="#" class="btn-primary" style="width: 100%; text-align: center; background-color: var(--color-accent);">Solicitar Agenda</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Trámites en Curso (Ventanilla Única)</span>
+                </div>
+                <div class="card-body">
+                    <p>**Registro Mercantil**</p>
+                    <p style="font-size: 0.85rem; color: gray;">Tu solicitud está en **verificación**. [cite: 94]</p>
+                    <p class="chip" style="background-color: orange; color: var(--color-white);">En Evaluación</p>
+                    <a href="#" style="display: block; margin-top: 1rem;">Ver detalle del expediente</a>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <span class="nav-item-icon">🏠</span>
+            Inicio
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-item-icon">🔍</span>
+            Buscar
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-item-icon">📣</span>
+            Convocatorias
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-item-icon">💬</span>
+            Mensajes
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-item-icon">👤</span>
+            Perfil
+        </a>
+    </nav>
+
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Curso – Player | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --color-primary:#1f4fd6;
+    --color-accent:#14b8a6;
+    --color-institutional:#132e80;
+    --color-text:#1f2937;
+    --color-muted:#4b5563;
+    --color-bg:#e5e7eb;
+    --color-surface:#ffffff;
+    --color-surface-subtle:#f8fafc;
+    --color-border:#d1d5db;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+  a{text-decoration:none;color:var(--color-primary)}
+  h1,h2{color:var(--color-institutional)}
+  .muted{color:var(--color-muted)}
+
+  /* Topbar */
+  .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* Main */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+
+  /* Layout del player */
+  .player-layout{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:1100px){ .player-layout{grid-template-columns:3fr 1fr} }
+
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+  .card-body{padding:1rem}
+  .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+
+  /* Contenedor video */
+  .video-shell{position:relative;background:#000;border-radius:.75rem;overflow:hidden}
+  .video{width:100%;height:auto;background:#000;display:block}
+  .controls{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;padding:.5rem;background:var(--color-surface-subtle);border-top:1px solid var(--color-border)}
+  .controls .grow{flex:1}
+  .btn, .seg{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.45rem .65rem;cursor:pointer;font-weight:600}
+  .btn:focus-visible, .seg:focus-visible{outline:2px solid var(--color-primary)}
+  .seg{border-radius:.5rem}
+  .seg[aria-pressed="true"]{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+  .time{font-variant-numeric:tabular-nums}
+
+  .range{width:100%}
+  input[type="range"]{width:100%}
+
+  .tabs{display:flex;gap:.25rem;border-bottom:1px solid var(--color-border);padding:.25rem .25rem 0;overflow-x:auto}
+  .tab{appearance:none;border:1px solid transparent;background:transparent;color:var(--color-institutional);font-weight:700;cursor:pointer;padding:.6rem .9rem;border-radius:.6rem;white-space:nowrap}
+  .tab:is(:hover,:focus-visible){background:var(--color-surface-subtle)}
+  .tab.is-active{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+  .panel[hidden]{display:none}
+
+  .list{display:grid;gap:.5rem}
+  .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+  .row{display:flex;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+
+  .aside{position:sticky;top:4.5rem;display:grid;gap:1rem;height:fit-content}
+  .chapter-btn{display:flex;justify-content:space-between;gap:.5rem;width:100%;text-align:left}
+
+  .transcript{max-height:260px;overflow:auto;border:1px solid var(--color-border);border-radius:.5rem;padding:.5rem;background:#fff}
+  .cue{padding:.25rem .35rem;border-radius:.35rem;cursor:pointer}
+  .cue.active{background:#eef2ff}
+  .search{display:flex;gap:.5rem;margin:.5rem 0}
+  .search input{flex:1;border:1px solid var(--color-border);border-radius:.5rem;padding:.45rem .6rem}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <h1 style="margin-bottom:.25rem">Diseño de MVP en 4 semanas — Reprodutor</h1>
+    <p class="muted" style="margin-bottom:.75rem">Lección 3 de 12 · “Prototipos rápidos y definición de MVP”</p>
+
+    <section class="player-layout">
+      <!-- Columna principal -->
+      <article class="card">
+        <div class="card-body" style="padding:0">
+          <!-- Video + Controles -->
+          <div class="video-shell" id="videoShell">
+            <video id="video" class="video" preload="metadata" crossorigin="anonymous" playsinline>
+              <source src="/media/demo.mp4" type="video/mp4">
+              <!-- Subtítulos (WebVTT) -->
+              <track id="track-es" kind="captions" srclang="es" label="Español" src="/media/demo-es.vtt" default>
+              <!-- Más tracks: <track kind="subtitles" srclang="en" label="English" src="/media/demo-en.vtt"> -->
+              Tu navegador no soporta video HTML5.
+            </video>
+          </div>
+          <div class="controls" aria-label="Controles de reproducción">
+            <button id="prev" class="btn" title="Anterior (Shift+←)">⟵</button>
+            <button id="play" class="btn" title="Espacio: reproducir/pausar">▶</button>
+            <button id="next" class="btn" title="Siguiente (Shift+→)">⟶</button>
+
+            <span class="time" id="current">00:00</span>
+            <input id="seek" type="range" class="range grow" min="0" max="100" step="0.1" value="0" aria-label="Barra de progreso">
+            <span class="time" id="duration">00:00</span>
+
+            <button id="cc" class="seg" aria-pressed="true" title="Subtítulos (C)">CC</button>
+            <select id="speed" class="btn" title="Velocidad">
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.25">1.25×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+
+            <button id="mute" class="btn" title="Silencio (M)">🔈</button>
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volumen" style="width:90px">
+
+            <button id="pip" class="btn" title="Picture-in-Picture (P)">🗔</button>
+            <button id="fs" class="btn" title="Pantalla completa (F)">⛶</button>
+          </div>
+
+          <!-- Tabs: Descripción, Transcript, Notas -->
+          <div class="card-body">
+            <nav class="tabs" role="tablist" aria-label="Secciones del player">
+              <button class="tab is-active" role="tab" aria-selected="true" aria-controls="p-desc" id="t-desc">Descripción</button>
+              <button class="tab" role="tab" aria-selected="false" aria-controls="p-trans" id="t-trans">Transcript</button>
+              <button class="tab" role="tab" aria-selected="false" aria-controls="p-notes" id="t-notes">Notas</button>
+            </nav>
+
+            <section id="p-desc" class="panel" role="tabpanel" tabindex="0" aria-labelledby="t-desc">
+              <p>En esta lección verás cómo bajar hipótesis a prototipos rápidos y cómo definir el **MVP** medible. Al final, tendrás un checklist para decidir qué construir primero.</p>
+              <div class="list" style="margin-top:.5rem">
+                <div class="row"><span>Material</span><a class="chip" href="#">Plantilla de hipótesis</a></div>
+                <div class="row"><span>Lectura</span><a class="chip" href="#">Guía de entrevistas</a></div>
+              </div>
+            </section>
+
+            <section id="p-trans" class="panel" role="tabpanel" tabindex="0" aria-labelledby="t-trans" hidden>
+              <div class="search">
+                <input id="tq" placeholder="Buscar en transcript (demo)" />
+                <button class="btn" id="tqNext">Buscar</button>
+              </div>
+              <div id="transcript" class="transcript" aria-label="Transcript (clic para saltar)">
+                <!-- cues estáticos de ejemplo -->
+                <div class="cue" data-t="5">00:05 — Bienvenida y objetivos.</div>
+                <div class="cue" data-t="42">00:42 — Qué es un MVP y qué no lo es.</div>
+                <div class="cue" data-t="95">01:35 — Prototipos de baja fidelidad.</div>
+                <div class="cue" data-t="150">02:30 — Métricas de aprendizaje clave.</div>
+                <div class="cue" data-t="210">03:30 — Cerrar con próximos pasos.</div>
+              </div>
+            </section>
+
+            <section id="p-notes" class="panel" role="tabpanel" tabindex="0" aria-labelledby="t-notes" hidden>
+              <p class="muted">Notas personales (se guardan en tu navegador):</p>
+              <textarea id="notes" rows="6" style="width:100%;border:1px solid var(--color-border);border-radius:.5rem;padding:.6rem" placeholder="Escribe tus notas aquí…"></textarea>
+              <div class="row" style="margin-top:.5rem">
+                <button class="btn" id="saveNotes">Guardar</button>
+                <span class="muted" id="saveInfo" aria-live="polite"></span>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+
+      <aside class="aside">
+        <div class="card">
+          <div class="card-header">Capítulos</div>
+          <div class="card-body list">
+            <button class="chapter-btn btn" data-t="0"><span>0. Intro</span><span>0:00</span></button>
+            <button class="chapter-btn btn" data-t="42"><span>1. MVP vs Prototipo</span><span>0:42</span></button>
+            <button class="chapter-btn btn" data-t="95"><span>2. Baja fidelidad</span><span>1:35</span></button>
+            <button class="chapter-btn btn" data-t="150"><span>3. Métricas</span><span>2:30</span></button>
+            <button class="chapter-btn btn" data-t="210"><span>4. Próximos pasos</span><span>3:30</span></button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Lecciones</div>
+          <div class="card-body list">
+            <a class="btn" href="#">⬅ Lección 2</a>
+            <a class="btn" href="#">Lección 4 ➡</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Recursos</div>
+          <div class="card-body list">
+            <a class="chip" href="#">Checklist de test</a>
+            <a class="chip" href="#">Backlog priorizado</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const $ = sel => document.querySelector(sel);
+    const $all = sel => Array.from(document.querySelectorAll(sel));
+    const video = $('#video');
+    const playBtn = $('#play');
+    const muteBtn = $('#mute');
+    const prevBtn = $('#prev');
+    const nextBtn = $('#next');
+    const ccBtn = $('#cc');
+    const pipBtn = $('#pip');
+    const fsBtn = $('#fs');
+    const speedSel = $('#speed');
+    const vol = $('#volume');
+    const seek = $('#seek');
+    const cur = $('#current');
+    const dur = $('#duration');
+    const transcript = $('#transcript');
+    const notes = $('#notes');
+    const saveBtn = $('#saveNotes');
+    const saveInfo = $('#saveInfo');
+
+    const fmt = s => {
+      if (isNaN(s) || !isFinite(s)) return '00:00';
+      const m = Math.floor(s/60).toString().padStart(2,'0');
+      const sec = Math.floor(s%60).toString().padStart(2,'0');
+      return `${m}:${sec}`;
+    };
+
+    // ===== Inicialización
+    video.addEventListener('loadedmetadata', () => {
+      seek.max = video.duration;
+      dur.textContent = fmt(video.duration);
+    });
+
+    // ===== Reproducir/Pausar (HTMLMediaElement) 
+    playBtn.addEventListener('click', () => video.paused ? video.play() : video.pause());
+    video.addEventListener('play', ()=> playBtn.textContent = '⏸');
+    video.addEventListener('pause',()=> playBtn.textContent = '▶');
+
+    // ===== Prev/Next (demo: saltos de 10s)
+    prevBtn.addEventListener('click', ()=> video.currentTime = Math.max(0, video.currentTime - 10));
+    nextBtn.addEventListener('click', ()=> video.currentTime = Math.min(video.duration, video.currentTime + 10));
+
+    // ===== Progreso y seek
+    video.addEventListener('timeupdate', ()=>{
+      seek.value = video.currentTime;
+      cur.textContent = fmt(video.currentTime);
+    });
+    seek.addEventListener('input', ()=> video.currentTime = parseFloat(seek.value));
+
+    // ===== Volumen/Mute
+    vol.addEventListener('input', ()=> video.volume = parseFloat(vol.value));
+    muteBtn.addEventListener('click', ()=> video.muted = !video.muted);
+    video.addEventListener('volumechange', ()=>{
+      muteBtn.textContent = video.muted || video.volume === 0 ? '🔇' : '🔈';
+    });
+
+    // ===== Velocidad
+    speedSel.addEventListener('change', ()=> video.playbackRate = parseFloat(speedSel.value));
+
+    // ===== Subtítulos (track kind=captions)
+    const track = document.getElementById('track-es');
+    ccBtn.addEventListener('click', ()=>{
+      const on = track.mode !== 'disabled';
+      track.mode = on ? 'disabled' : 'showing';
+      ccBtn.setAttribute('aria-pressed', (!on).toString());
+    });
+    // poner visible por defecto (si el navegador no lo hace)
+    track.mode = 'showing';
+
+    // ===== Picture-in-Picture (si disponible)
+    pipBtn.addEventListener('click', async ()=>{
+      try{
+        if (document.pictureInPictureElement) {
+          await document.exitPictureInPicture();
+        } else if (document.pictureInPictureEnabled) {
+          await video.requestPictureInPicture();
+        }
+      }catch(e){ console.warn('PiP no disponible:', e); }
+    });
+
+    // ===== Fullscreen
+    const videoShell = document.getElementById('videoShell');
+    fsBtn.addEventListener('click', async ()=>{
+      try{
+        if (!document.fullscreenElement) {
+          await videoShell.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      }catch(e){ console.warn('Fullscreen no disponible:', e); }
+    });
+
+    // ===== Transcript (cues mock)
+    transcript.addEventListener('click', (e)=>{
+      const cue = e.target.closest('.cue'); if(!cue) return;
+      const t = parseFloat(cue.dataset.t||'0'); video.currentTime = t; video.play();
+      $all('.cue').forEach(c=>c.classList.remove('active')); cue.classList.add('active');
+    });
+
+    // Buscar en transcript (demo)
+    let lastIdx = -1;
+    $('#tqNext').addEventListener('click', ()=>{
+      const q = ($('#tq').value||'').toLowerCase().trim(); if(!q) return;
+      const cues = $all('.cue');
+      for(let i=1;i<=cues.length;i++){
+        const idx = (lastIdx + i) % cues.length;
+        if(cues[idx].textContent.toLowerCase().includes(q)){
+          lastIdx = idx;
+          cues[idx].scrollIntoView({block:'center'}); cues[idx].classList.add('active');
+          return;
+        }
+      }
+    });
+
+    // ===== Notas en localStorage
+    const NOTES_KEY = 'aneir_course_notes_l3';
+    notes.value = localStorage.getItem(NOTES_KEY) || '';
+    saveBtn.addEventListener('click', ()=>{
+      localStorage.setItem(NOTES_KEY, notes.value);
+      saveInfo.textContent = 'Notas guardadas ✓';
+      setTimeout(()=> saveInfo.textContent = '', 2000);
+    });
+
+    // ===== Tabs (Descripción / Transcript / Notas)
+    (function(){
+      const tabs = $all('[role="tablist"] .tab');
+      const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+      function activate(i){
+        tabs.forEach((t,idx)=>{
+          const on = idx===i;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          panels[idx].hidden = !on;
+        });
+      }
+      tabs.forEach((t,i)=>{
+        t.addEventListener('click', ()=> activate(i));
+        t.addEventListener('keydown', (e)=>{
+          let idx = tabs.indexOf(document.activeElement);
+          if(e.key==='ArrowRight'){e.preventDefault();idx=(idx+1)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='ArrowLeft'){e.preventDefault();idx=(idx-1+tabs.length)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='Home'){e.preventDefault();tabs[0].focus();}
+          else if(e.key==='End'){e.preventDefault();tabs[tabs.length-1].focus();}
+          else if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(idx);}
+        });
+      });
+      activate(0);
+    })();
+
+    // ===== Capítulos
+    $all('.chapter-btn').forEach(b=> b.addEventListener('click', ()=> {
+      const t = parseFloat(b.dataset.t||'0'); video.currentTime = t; video.play();
+    }));
+
+    // ===== Atajos de teclado
+    document.addEventListener('keydown', (e)=>{
+      const tag = document.activeElement.tagName.toLowerCase();
+      const typing = (tag==='input'||tag==='textarea');
+      if(typing) return;
+      if(e.key===' '){ e.preventDefault(); video.paused ? video.play() : video.pause(); }
+      else if(e.key==='ArrowLeft'){ e.preventDefault(); video.currentTime = Math.max(0, video.currentTime-5); }
+      else if(e.key==='ArrowRight'){ e.preventDefault(); video.currentTime = Math.min(video.duration, video.currentTime+5); }
+      else if(e.key==='ArrowUp'){ e.preventDefault(); video.volume = Math.min(1, (video.volume||0)+0.05); }
+      else if(e.key==='ArrowDown'){ e.preventDefault(); video.volume = Math.max(0, (video.volume||0)-0.05); }
+      else if(e.key.toLowerCase()==='m'){ video.muted = !video.muted; }
+      else if(e.key.toLowerCase()==='c'){ ccBtn.click(); }
+      else if(e.key.toLowerCase()==='f'){ fsBtn.click(); }
+      else if(e.key.toLowerCase()==='p'){ pipBtn.click(); }
+      else if(e.shiftKey && e.key==='ArrowLeft'){ prevBtn.click(); }
+      else if(e.shiftKey && e.key==='ArrowRight'){ nextBtn.click(); }
+    });
+
+    // ===== Media Session API (controles del sistema)
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'L3 • Prototipos rápidos',
+        artist: 'Ing. Ana Gómez',
+        album: 'Diseño de MVP',
+        artwork: [{src:'/media/cover.png',sizes:'512x512',type:'image/png'}]
+      });
+      const skip = sec => { video.currentTime = Math.min(video.duration, Math.max(0, video.currentTime + sec)); };
+      navigator.mediaSession.setActionHandler('play', () => video.play());
+      navigator.mediaSession.setActionHandler('pause', () => video.pause());
+      navigator.mediaSession.setActionHandler('seekbackward', () => skip(-10));
+      navigator.mediaSession.setActionHandler('seekforward', () => skip(10));
+      navigator.mediaSession.setActionHandler('seekto', (d)=>{ if (d.fastSeek && 'fastSeek' in video){ video.fastSeek(d.seekTime); } else { video.currentTime = d.seekTime; }});
+      navigator.mediaSession.setActionHandler('stop', () => { video.pause(); video.currentTime = 0; });
+      navigator.mediaSession.setActionHandler('previoustrack', ()=> prevBtn.click());
+      navigator.mediaSession.setActionHandler('nexttrack', ()=> nextBtn.click());
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel Evaluador — Lista | ANEIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Tokens coherentes ===== */
+    :root{
+      --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+      --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+      --color-surface:#ffffff; --color-border:#d1d5db;
+      --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+      --ok:#16a34a; --warn:#f59e0b; --err:#b91c1c;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+    a{text-decoration:none;color:var(--color-primary)}
+    h1,h2{color:var(--color-institutional)}
+    .muted{color:var(--color-muted)}
+
+    /* Topbar */
+    .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+    .topbar-logo{font-weight:700;color:var(--color-institutional)}
+    .topbar-nav{display:flex;gap:1.25rem}
+    .topbar-actions{display:flex;gap:.75rem}
+    .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+    /* Sidebar */
+    .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+    .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+    .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+    /* Main */
+    .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+    .breadcrumb{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem;font-size:.9rem}
+    .breadcrumb .sep{opacity:.6}
+
+    /* Toolbar de filtros */
+    .toolbar{display:grid;gap:.75rem;background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin-bottom:1rem}
+    .row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+    .input, select{border:1px solid var(--color-border);border-radius:.5rem;padding:.55rem .7rem;background:#fff}
+    .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.55rem .9rem;font-weight:600;cursor:pointer}
+    .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+
+    /* Tabla */
+    .table-wrap{max-height:60vh;overflow:auto;border:1px solid var(--color-border);border-radius:.75rem;background:#fff;box-shadow:var(--shadow-md)}
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    caption{caption-side:top;text-align:left;padding:.75rem;border-bottom:1px solid var(--color-border);font-weight:700;color:var(--color-institutional)}
+    thead th{position:sticky;top:0;background:#f8fafc;border-bottom:1px solid var(--color-border);z-index:1}
+    th,td{padding:.6rem;text-align:left;border-bottom:1px solid var(--color-border)}
+    th[role="columnheader"] button{all:unset;cursor:pointer;font-weight:700;color:var(--color-institutional)}
+    tr:hover td{background:#fafafa}
+    .status{display:inline-flex;align-items:center;gap:.35rem;font-weight:700}
+    .dot{width:8px;height:8px;border-radius:9999px;background:var(--warn)}
+    .s-ok .dot{background:var(--ok)}
+    .s-err .dot{background:var(--err)}
+
+    /* Paginación */
+    .pagination{display:flex;justify-content:center;gap:.25rem;flex-wrap:wrap;margin:1rem 0}
+    .pagination a,.pagination span{border:1px solid var(--color-border);border-radius:.5rem;padding:.45rem .7rem;background:#fff;color:var(--color-text);text-decoration:none}
+    .pagination a[aria-current="page"], .pagination span[aria-current="page"]{background:var(--color-primary);color:#fff;border-color:var(--color-primary);font-weight:700}
+  </style>
+  <link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Inicio</a>
+      <span class="sep">/</span>
+      <span aria-current="page">Panel Evaluador</span>
+    </nav>
+
+    <header style="margin-bottom:.75rem">
+      <h1>Panel Evaluador — Lista</h1>
+      <p class="muted">Filtra, ordena y accede al detalle para dictaminar. (Datos de demo)</p>
+    </header>
+
+    <!-- Filtros -->
+    <section class="toolbar" aria-label="Filtros de evaluación">
+      <div class="row">
+        <input id="q" class="input" placeholder="Buscar por startup o folio…" aria-label="Buscar">
+        <select id="sector" class="input" aria-label="Sector">
+          <option>Sector: Todos</option><option>AgroTech</option><option>FinTech</option><option>HealthTech</option><option>EdTech</option>
+        </select>
+        <select id="etapa" class="input" aria-label="Etapa">
+          <option>Etapa: Todas</option><option>Idea</option><option>MVP</option><option>Tracción</option><option>Crecimiento</option>
+        </select>
+        <select id="estado" class="input" aria-label="Estado">
+          <option>Estado: Todos</option><option>En revisión</option><option>Observado</option><option>Aprobado</option>
+        </select>
+        <button id="clear" class="btn">Limpiar</button>
+        <button class="btn btn-primary">Aplicar</button>
+        <span class="chip" style="margin-left:auto" id="count" aria-live="polite">8 items</span>
+      </div>
+    </section>
+
+    <!-- Tabla -->
+    <div class="table-wrap" role="region" aria-label="Lista de startups para evaluar" tabindex="0">
+      <table aria-describedby="tbl-cap">
+        <caption id="tbl-cap">Startups en evaluación</caption>
+        <thead>
+          <tr>
+            <th role="columnheader" scope="col"><button data-sort="startup">Startup ▾</button></th>
+            <th role="columnheader" scope="col"><button data-sort="sector">Sector</button></th>
+            <th role="columnheader" scope="col"><button data-sort="etapa">Etapa</button></th>
+            <th role="columnheader" scope="col"><button data-sort="score">Puntaje IA</button></th>
+            <th role="columnheader" scope="col"><button data-sort="estado">Estado</button></th>
+            <th role="columnheader" scope="col">Última acción</th>
+            <th role="columnheader" scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr>
+            <td>AgroIA SRL</td><td>AgroTech</td><td>MVP</td><td>82</td>
+            <td class="status"><span class="dot"></span> En revisión</td><td>22 Sep</td>
+            <td><a class="btn btn-primary" href="evaluador_detalle.html">Evaluar</a></td>
+          </tr>
+          <tr>
+            <td>FinPay</td><td>FinTech</td><td>Tracción</td><td>88</td>
+            <td class="status s-ok"><span class="dot"></span> Aprobado</td><td>20 Sep</td>
+            <td><a class="btn" href="evaluador_detalle.html">Ver</a></td>
+          </tr>
+          <tr>
+            <td>Salud+</td><td>HealthTech</td><td>Idea</td><td>61</td>
+            <td class="status s-err"><span class="dot"></span> Observado</td><td>18 Sep</td>
+            <td><a class="btn" href="evaluador_detalle.html">Revisar</a></td>
+          </tr>
+          <tr>
+            <td>EduNova</td><td>EdTech</td><td>MVP</td><td>73</td>
+            <td class="status"><span class="dot"></span> En revisión</td><td>16 Sep</td>
+            <td><a class="btn btn-primary" href="evaluador_detalle.html">Evaluar</a></td>
+          </tr>
+          <tr>
+            <td>GreenWatt</td><td>Energía</td><td>Crecimiento</td><td>79</td>
+            <td class="status s-ok"><span class="dot"></span> Aprobado</td><td>12 Sep</td>
+            <td><a class="btn" href="evaluador_detalle.html">Ver</a></td>
+          </tr>
+          <tr>
+            <td>AgroData</td><td>AgroTech</td><td>Tracción</td><td>84</td>
+            <td class="status"><span class="dot"></span> En revisión</td><td>11 Sep</td>
+            <td><a class="btn btn-primary" href="evaluador_detalle.html">Evaluar</a></td>
+          </tr>
+          <tr>
+            <td>MedLink</td><td>HealthTech</td><td>MVP</td><td>68</td>
+            <td class="status s-err"><span class="dot"></span> Observado</td><td>10 Sep</td>
+            <td><a class="btn" href="evaluador_detalle.html">Revisar</a></td>
+          </tr>
+          <tr>
+            <td>PagoX</td><td>FinTech</td><td>Idea</td><td>57</td>
+            <td class="status"><span class="dot"></span> En revisión</td><td>08 Sep</td>
+            <td><a class="btn btn-primary" href="evaluador_detalle.html">Evaluar</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <nav class="pagination" role="navigation" aria-label="Paginación de tabla">
+      <a href="#" aria-label="Anterior">«</a>
+      <a href="#" aria-label="Página 1">1</a>
+      <a href="#" aria-current="page" aria-label="Página 2, actual">2</a>
+      <a href="#" aria-label="Página 3">3</a>
+      <span aria-disabled="true" aria-label="Más">…</span>
+      <a href="#" aria-label="Siguiente">»</a>
+    </nav>
+  </main>
+
+  <!-- JS demo: búsqueda/filtros + orden simple -->
+  <script>
+    (function(){
+      const rows = Array.from(document.querySelectorAll('#rows tr'));
+      const q = document.getElementById('q');
+      const sector = document.getElementById('sector');
+      const etapa = document.getElementById('etapa');
+      const estado = document.getElementById('estado');
+      const count = document.getElementById('count');
+      const clear = document.getElementById('clear');
+
+      function render(list){
+        const tbody = document.getElementById('rows');
+        tbody.innerHTML = '';
+        list.forEach(tr=>tbody.appendChild(tr));
+        count.textContent = list.length + ' items';
+      }
+
+      function text(t){ return (t||'').toLowerCase(); }
+
+      function apply(){
+        const term = text(q.value);
+        const list = rows.filter(tr=>{
+          const [cStartup,cSector,cEtapa,,cEstado] = Array.from(tr.children).map(td=>text(td.textContent));
+          const mQ = !term || cStartup.includes(term) || cSector.includes(term);
+          const mSector = sector.selectedIndex===0 || cSector===text(sector.value.replace('Sector: ',''));
+          const mEtapa = etapa.selectedIndex===0 || cEtapa===text(etapa.value.replace('Etapa: ',''));
+          const mEstado = estado.selectedIndex===0 || cEstado.includes(text(estado.value.replace('Estado: ','')));
+          return mQ && mSector && mEtapa && mEstado;
+        });
+        render(list);
+      }
+
+      [q,sector,etapa,estado].forEach(el=> el && el.addEventListener('input', apply));
+      clear && clear.addEventListener('click', ()=>{
+        if(q) q.value='';
+        sector.selectedIndex=0; etapa.selectedIndex=0; estado.selectedIndex=0;
+        render(rows);
+      });
+
+      // Orden simple por columna (numérico para score, alfabético resto)
+      document.querySelectorAll('th [data-sort]').forEach(btn=>{
+        let dir = -1; // -1 desc (predeterminado ▾), 1 asc
+        btn.addEventListener('click', ()=>{
+          const key = btn.dataset.sort;
+          const list = Array.from(document.querySelectorAll('#rows tr'));
+          list.sort((a,b)=>{
+            const map = {startup:0, sector:1, etapa:2, score:3, estado:4};
+            const ia = a.children[map[key]].textContent.trim();
+            const ib = b.children[map[key]].textContent.trim();
+            if(key==='score'){ return dir*(parseFloat(ia)-parseFloat(ib)); }
+            return dir*ia.localeCompare(ib, 'es', {sensitivity:'base'});
+          });
+          dir *= -1;
+          render(list);
+          // visual: togglear flecha en el encabezado activo
+          document.querySelectorAll('th [data-sort]').forEach(x=>{
+            x.textContent = x.textContent.replace(/[▴▾]\s*$/,'');
+          });
+          btn.textContent = btn.textContent.replace(/[▴▾]\s*$/,'') + (dir===-1?' ▾':' ▴');
+        });
+      });
+
+      // Estado inicial
+      render(rows);
+    })();
+  </script>
+</body>
+</html>

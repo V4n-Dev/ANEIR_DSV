@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Curso – Diseño de MVP en 4 semanas | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --color-primary:#1f4fd6;
+    --color-accent:#14b8a6;
+    --color-institutional:#132e80;
+    --color-text:#1f2937;
+    --color-muted:#4b5563;
+    --color-bg:#e5e7eb;
+    --color-surface:#ffffff;
+    --color-surface-subtle:#f8fafc;
+    --color-border:#d1d5db;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+  a{text-decoration:none;color:var(--color-primary)}
+  h1,h2{color:var(--color-institutional)}
+  .muted{color:var(--color-muted)}
+
+  /* Topbar */
+  .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* Main */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+
+  /* Breadcrumb (NN/g) */
+  .breadcrumb{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.5rem;font-size:.9rem;color:var(--color-muted)}
+  .breadcrumb a{color:var(--color-muted)}
+  .sep{opacity:.6}
+
+  /* Hero del curso */
+  .hero{display:grid;gap:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin-bottom:1rem}
+  .banner{height:140px;background:linear-gradient(90deg,#e5e7eb,#f3f4f6);border-radius:.5rem}
+  .hero-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+  .chips{display:flex;gap:.5rem;flex-wrap:wrap}
+  .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+  .stats{display:flex;gap:1rem;flex-wrap:wrap}
+  .stat{background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:.6rem;padding:.5rem .75rem}
+
+  .btn-primary{background:var(--color-primary);color:#fff;border:0;border-radius:.5rem;padding:.6rem 1rem;font-weight:700;cursor:pointer}
+  .ghost{background:transparent;border:1px solid var(--color-border);border-radius:.5rem;padding:.5rem .9rem;font-weight:600;cursor:pointer}
+
+  /* Layout */
+  .content{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:1024px){ .content{grid-template-columns:2fr 1fr} }
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+  .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+  .card-body{padding:1rem}
+  .aside{position:sticky;top:4.5rem;display:grid;gap:1rem;height:fit-content}
+
+  /* Tabs accesibles (APG/MDN) */
+  .tabs{
+    position:sticky; top:4.25rem; z-index:10;
+    display:flex; gap:.25rem; overflow-x:auto;
+    background:var(--color-surface); border:1px solid var(--color-border);
+    border-radius:.75rem; padding:.25rem; box-shadow:var(--shadow-md);
+    scroll-snap-type:x proximity;
+  }
+  .tab{
+    scroll-snap-align:start;
+    appearance:none; border:1px solid transparent; background:transparent;
+    color:var(--color-institutional); font-weight:700; cursor:pointer;
+    padding:.6rem .9rem; border-radius:.6rem; white-space:nowrap;
+  }
+  .tab:is(:hover,:focus-visible){ background:var(--color-surface-subtle); outline:none; }
+  .tab.is-active{ background:var(--color-primary); color:#fff; border-color:var(--color-primary); }
+  .panel[hidden]{display:none}
+
+  /* Listas y elementos */
+  ul{padding-left:1.2rem}
+  .list{display:grid;gap:.5rem}
+  .row{display:flex;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+  .badge{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:9999px;padding:.18rem .5rem;font-size:.75rem;font-weight:700;margin-right:.35rem}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Miga de pan">
+      <a href="academia_mentoria.html">Academia & Mentoría</a>
+      <span class="sep">/</span>
+      <span aria-current="page">Curso: Diseño de MVP en 4 semanas</span>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" aria-label="Encabezado curso">
+      <div class="banner" role="img" aria-label="Portada del curso (mock)"></div>
+      <div class="hero-head">
+        <div>
+          <h1>Diseño de MVP en 4 semanas</h1>
+          <p class="muted">Nivel: Intermedio — Certificable — Formato: Video + Plantillas</p>
+          <div class="chips" style="margin-top:.35rem">
+            <span class="chip">Producto</span>
+            <span class="chip">B2B/B2C</span>
+            <span class="chip">Validación</span>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>Duración:</b> 6h</div>
+          <div class="stat"><b>Lecciones:</b> 12</div>
+          <div class="stat"><b>Valoración:</b> ★ 4.8</div>
+        </div>
+      </div>
+      <div class="row">
+        <button class="ghost" onclick="history.back()">← Volver</button>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <a class="ghost" href="#temario">Ver temario</a>
+          <a class="btn-primary" href="curso_player.html">Empezar curso</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contenido + Aside -->
+    <section class="content">
+      <article>
+        <!-- Tabs (APG/MDN) -->
+        <nav class="tabs" role="tablist" aria-label="Secciones del curso">
+          <button class="tab is-active" role="tab" aria-selected="true" aria-controls="p-resumen" id="t-resumen">Resumen</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-temario" id="t-temario">Temario</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-instructor" id="t-instructor">Instructor</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-resenas" id="t-resenas">Reseñas</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-recursos" id="t-recursos">Recursos</button>
+        </nav>
+
+        <!-- Paneles -->
+        <section id="p-resumen" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-resumen">
+          <h2>Resumen</h2>
+          <p>Aprende a **definir, construir y validar** un MVP en 4 semanas: foco en problema–solución, hipótesis, prototipos de baja fidelidad y pruebas con usuarios. Incluye plantillas descargables y ejemplos reales.</p>
+          <ul class="list" style="margin-top:.5rem">
+            <li>Resultados: backlog priorizado, métricas de aprendizaje y plan de siguiente sprint.</li>
+            <li>Para: equipos en Idea/MVP con tiempo limitado y necesidad de validar rápido.</li>
+            <li>Requisitos: nociones básicas de producto/UX.</li>
+          </ul>
+        </section>
+
+        <section id="p-temario" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-temario" hidden>
+          <h2 id="temario">Temario</h2>
+          <ol class="list">
+            <li><b>Semana 1:</b> Problema, ICP y mapa de hipótesis.</li>
+            <li><b>Semana 2:</b> Prototipos rápidos y definición de MVP.</li>
+            <li><b>Semana 3:</b> Tests con usuarios y métricas.</li>
+            <li><b>Semana 4:</b> Iteración, roadmap y pitch.</li>
+          </ol>
+          <div style="margin-top:.75rem">
+            <span class="badge">Plantilla: Mapa de hipótesis</span>
+            <span class="badge">Checklist de test</span>
+            <span class="badge">Guía de entrevista</span>
+          </div>
+        </section>
+
+        <section id="p-instructor" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-instructor" hidden>
+          <h2>Instructor</h2>
+          <div style="display:flex;gap:1rem;align-items:center;margin:.25rem 0  .5rem">
+            <div style="width:56px;height:56px;border-radius:9999px;background:#cbd5e1;border:2px solid #fff"></div>
+            <div>
+              <h3>Ing. Ana Gómez</h3>
+              <p class="muted">Producto & UX — SaaS B2B</p>
+            </div>
+          </div>
+          <ul class="list">
+            <li>10+ años en diseño de producto y descubrimiento de usuarios.</li>
+            <li>Ha liderado lanzamientos de MVPs en FinTech/EdTech.</li>
+          </ul>
+          <p style="margin-top:.5rem"><a class="ghost" href="mentor_detalle.html">Ver perfil completo</a></p>
+        </section>
+
+        <section id="p-resenas" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-resenas" hidden>
+          <h2>Reseñas</h2>
+          <ul class="list">
+            <li>“Bajamos a tierra el MVP y salimos a probar en una semana.” — <span class="muted">FinPay</span></li>
+            <li>“Plantillas muy útiles; claridad en métricas de aprendizaje.” — <span class="muted">AgroIA</span></li>
+          </ul>
+        </section>
+
+        <section id="p-recursos" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-recursos" hidden>
+          <h2>Recursos</h2>
+          <ul class="list">
+            <li>Plantilla de backlog priorizado (Sheets)</li>
+            <li>Checklist de pruebas con usuarios (PDF)</li>
+            <li>Playbook de entrevistas (Doc)</li>
+          </ul>
+        </section>
+      </article>
+
+      <!-- Aside -->
+      <aside class="aside">
+        <div class="card">
+          <div class="card-header">Inscripción</div>
+          <div class="card-body">
+            <p class="muted">Acceso sin caducidad — Certificado incluido</p>
+            <p style="font-size:1.5rem;font-weight:800;margin:.4rem 0">US$ 0 <span class="muted" style="font-size:.95rem">/ Gratis</span></p>
+            <a class="btn-primary" style="display:inline-block" href="curso_player.html">Empezar curso</a>
+            <p class="muted" style="margin-top:.5rem">¿Empresa o cohorte? <a href="#">Escríbenos</a></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Lo que aprenderás</div>
+          <div class="card-body">
+            <ul class="list">
+              <li>Definir MVP medible y priorizado</li>
+              <li>Diseñar prototipos útiles para test</li>
+              <li>Medir aprendizaje y planificar el siguiente sprint</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Requisitos</div>
+          <div class="card-body">
+            <ul class="list">
+              <li>Nociones básicas de producto/UX</li>
+              <li>Cuenta ANEIR</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- JS: Tabs accesibles (APG: teclas flecha/Home/End + activación manual) -->
+  <script>
+    (function(){
+      const tabs = Array.from(document.querySelectorAll('[role="tablist"] [role="tab"]'));
+      const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+
+      function activate(i,{focus=false}={}){
+        tabs.forEach((t,idx)=>{
+          const on = idx===i;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          panels[idx].hidden = !on;
+          if(on && focus) t.focus();
+        });
+      }
+
+      tabs.forEach((t,i)=>{
+        t.addEventListener('click',()=>activate(i));
+        t.addEventListener('keydown',(e)=>{
+          let idx=tabs.indexOf(document.activeElement);
+          if(e.key==='ArrowRight'){e.preventDefault();idx=(idx+1)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='ArrowLeft'){e.preventDefault();idx=(idx-1+tabs.length)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='Home'){e.preventDefault();tabs[0].focus();}
+          else if(e.key==='End'){e.preventDefault();tabs[tabs.length-1].focus();}
+          else if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(idx);}
+        });
+      });
+
+      activate(0);
+    })();
+  </script>
+</body>
+</html>

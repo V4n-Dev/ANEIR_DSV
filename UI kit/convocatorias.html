@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convocatorias | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ====== TOKENS (coherentes con pantallas previas) ====== */
+  :root{
+    --color-primary:#1f4fd6;
+    --color-accent:#14b8a6;
+    --color-institutional:#132e80;
+    --color-text-dark:#1f2937;
+    --color-text-muted:#4b5563;
+    --color-surface:#ffffff;
+    --color-surface-subtle:#f8fafc;
+    --color-background:#e5e7eb;
+    --color-border:#d1d5db;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--color-text-dark);background:var(--color-background);line-height:1.6;display:flex}
+  a{text-decoration:none;color:var(--color-primary)}
+  h1{color:var(--color-institutional)}
+
+  /* Topbar */
+  .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-background);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text-dark)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* Main */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+  .muted{color:var(--color-text-muted)}
+
+  /* Filtros */
+  .filters{background:var(--color-surface);border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin-bottom:1rem}
+  .filters-grid{display:grid;gap:.75rem;grid-template-columns:1fr}
+  .field{display:flex;flex-direction:column}
+  .field label{font-weight:600;font-size:.9rem;margin-bottom:.35rem}
+  .input, select{border:1px solid var(--color-border);border-radius:.5rem;padding:.6rem;background:#fff}
+  .row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+  .btn-primary{background:var(--color-primary);color:#fff;border:0;border-radius:.5rem;padding:.6rem 1rem;font-weight:700;cursor:pointer}
+  .ghost{background:transparent;border:1px solid var(--color-border);border-radius:.5rem;padding:.5rem .9rem;font-weight:600;cursor:pointer}
+  .chip{background:var(--color-background);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+
+  /* Cards grid */
+  .grid{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:768px){ .filters-grid{grid-template-columns:repeat(4,1fr)} .grid{grid-template-columns:repeat(2,1fr)} }
+  @media(min-width:1200px){ .grid{grid-template-columns:repeat(3,1fr)} }
+
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);overflow:hidden;display:flex;flex-direction:column}
+  .banner{height:120px;background:linear-gradient(90deg,#e5e7eb,#f3f4f6)}
+  .card-body{padding:1rem}
+  .card-header{display:flex;justify-content:space-between;align-items:center}
+  .badges{display:flex;gap:.35rem;flex-wrap:wrap;margin:.25rem 0 .5rem}
+  .badge{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:9999px;padding:.18rem .5rem;font-size:.75rem;font-weight:700}
+  .meta{font-size:.9rem;color:var(--color-text-muted)}
+  .kpis{display:flex;gap:1rem;font-size:.9rem;margin:.5rem 0}
+  .actions{display:flex;justify-content:space-between;align-items:center;padding:0 1rem 1rem}
+  .cta{background:var(--color-accent);color:#fff;border:0;border-radius:.5rem;padding:.5rem .8rem;font-weight:700;cursor:pointer}
+
+  /* Paginación / orden */
+  .toolbar{display:flex;gap:.5rem;align-items:center;justify-content:space-between;margin:.75rem 0}
+  .pager{display:flex;gap:.25rem}
+  .pager .ghost{padding:.45rem .7rem}
+  .sort{display:flex;align-items:center;gap:.5rem}
+
+  /* Empty */
+  .empty{background:#fff;border:1px dashed var(--color-border);border-radius:.75rem;padding:2rem;text-align:center;color:var(--color-text-muted);margin-top:.75rem}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <h1>Convocatorias</h1>
+    <p class="muted" style="margin:.25rem 0 1rem">Explora programas de capital, mentoría y aceleración.</p>
+
+    <!-- Filtros -->
+    <section class="filters" aria-label="Filtros de convocatorias">
+      <div class="filters-grid">
+        <div class="field">
+          <label for="q">Buscar</label>
+          <input id="q" class="input" placeholder="Nombre, institución, beneficios… (demo estático)"/>
+        </div>
+        <div class="field">
+          <label for="estado">Estado</label>
+          <select id="estado">
+            <option>Todas</option><option>Abierta</option><option>Próxima</option><option>Cerrada</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tipo">Tipo</label>
+          <select id="tipo">
+            <option>Todos</option><option>Capital semilla</option><option>Aceleración</option><option>Mentoría</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sector">Sector</label>
+          <select id="sector">
+            <option>Todos</option><option>AgroTech</option><option>FinTech</option><option>HealthTech</option><option>EdTech</option><option>Energía</option><option>Turismo</option><option>Manufactura</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="chip">RD</span>
+        <span class="chip">B2B</span>
+        <button class="ghost" style="margin-left:auto">Limpiar</button>
+        <button class="btn-primary">Aplicar</button>
+      </div>
+    </section>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="muted">Mostrando 6 de 18 convocatorias</div>
+      <div class="sort">
+        <span class="muted">Ordenar por</span>
+        <select class="input" style="padding:.45rem .6rem">
+          <option>Recomendadas</option>
+          <option>Fecha de cierre</option>
+          <option>Novedades</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Grid de convocatorias -->
+    <section class="grid" aria-label="Resultados de convocatorias">
+      <!-- Card 1 -->
+      <article class="card">
+        <div class="banner" role="img" aria-label="Banner Capital Semilla (mock)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <h3>Fondo Capital Semilla 2025</h3>
+            <span class="badge">Abierta</span>
+          </div>
+          <div class="badges">
+            <span class="badge">US$15,000</span>
+            <span class="badge">Multisector</span>
+            <span class="badge">No reembolsable</span>
+          </div>
+          <p class="meta">Cierre: 30 Nov — Organiza: ANEIR + Academia</p>
+          <div class="kpis">
+            <span>IA Score: 8/10</span>
+            <span>Duración: 4–6 meses</span>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="ghost" href="convocatoria_detalle.html">Ver detalles</a>
+          <a class="cta" href="postulacion.html">Postular</a>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card">
+        <div class="banner" role="img" aria-label="Banner Aceleradora Caribe (mock)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <h3>Aceleradora Caribe Cohorte Q1</h3>
+            <span class="badge">Próxima</span>
+          </div>
+          <div class="badges">
+            <span class="badge">Mentoría + Capital</span>
+            <span class="badge">Tecnología</span>
+          </div>
+          <p class="meta">Apertura: 15 Dic — Organiza: MICM + Red Universitaria</p>
+          <div class="kpis">
+            <span>IA Score: 7/10</span>
+            <span>Plazas: 20</span>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="ghost" href="convocatoria_detalle.html">Ver detalles</a>
+          <a class="cta" href="postulacion.html">Pre-registrarme</a>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card">
+        <div class="banner" role="img" aria-label="Banner Innovación Rural (mock)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <h3>Innovación Rural 2025</h3>
+            <span class="badge">Abierta</span>
+          </div>
+          <div class="badges">
+            <span class="badge">US$8,000</span>
+            <span class="badge">AgroTech</span>
+          </div>
+          <p class="meta">Cierre: 12 Nov — Organiza: MEPyD</p>
+          <div class="kpis">
+            <span>IA Score: 6/10</span>
+            <span>Duración: 3 meses</span>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="ghost" href="convocatoria_detalle.html">Ver detalles</a>
+          <a class="cta" href="postulacion.html">Postular</a>
+        </div>
+      </article>
+
+      <!-- Card 4 -->
+      <article class="card">
+        <div class="banner"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <h3>Desafío Salud Digital</h3>
+            <span class="badge">Cerrada</span>
+          </div>
+          <div class="badges">
+            <span class="badge">HealthTech</span>
+            <span class="badge">Pilotos Clínicos</span>
+          </div>
+          <p class="meta">Cierre: 05 Sep — Organiza: MSP</p>
+          <div class="kpis">
+            <span>Cohorte: 12 equipos</span>
+            <span>IA Score: 7/10</span>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="ghost" href="convocatoria_detalle.html">Resultados</a>
+          <span class="muted">—</span>
+        </div>
+      </article>
+
+      <!-- Card 5 -->
+      <article class="card">
+        <div class="banner"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <h3>Impulsa Exporta</h3>
+            <span class="badge">Abierta</span>
+          </div>
+          <div class="badges">
+            <span class="badge">Mentoría</span>
+            <span class="badge">Go-to-Market</span>
+          </div>
+          <p class="meta">Cierre: 22 Nov — Organiza: ProDominicana</p>
+          <div class="kpis">
+            <span>Mentores: 30+</span>
+            <span>IA Score: 6/10</span>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="ghost" href="convocatoria_detalle.html">Ver detalles</a>
+          <a class="cta" href="postulacion.html">Postular</a>
+        </div>
+      </article>
+
+      <!-- Card 6 -->
+      <article class="card">
+        <div class="banner"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <h3>Fondo Energía Limpia</h3>
+            <span class="badge">Próxima</span>
+          </div>
+          <div class="badges">
+            <span class="badge">Energía</span>
+            <span class="badge">Matching Funds</span>
+          </div>
+          <p class="meta">Apertura: 01 Ene — Organiza: CNE</p>
+          <div class="kpis">
+            <span>Ticket: US$50k–200k</span>
+            <span>IA Score: 8/10</span>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="ghost" href="convocatoria_detalle.html">Ver detalles</a>
+          <a class="cta" href="postulacion.html">Pre-registrarme</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- Paginación -->
+    <div class="toolbar">
+      <div class="pager">
+        <button class="ghost">«</button>
+        <button class="ghost">1</button>
+        <button class="ghost" style="background:var(--color-surface-subtle)">2</button>
+        <button class="ghost">3</button>
+        <button class="ghost">»</button>
+      </div>
+      <div class="muted">Página 2 de 3</div>
+    </div>
+
+    <!-- Empty state (de ejemplo, dejar comentado) -->
+    <!-- <div class="empty">No hay convocatorias con los filtros actuales.</div> -->
+  </main>
+</body>
+</html>

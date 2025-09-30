@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ayuda & FAQ | ANEIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --color-primary:#1f4fd6; --color-accent:#14b8a6; --color-institutional:#132e80;
+    --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+    --color-surface:#fff; --color-surface-subtle:#f8fafc; --color-border:#d1d5db;
+    --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+  a{color:var(--color-primary);text-decoration:none}
+  h1,h2{color:var(--color-institutional)}
+  .muted{color:var(--color-muted)}
+
+  /* Topbar */
+  .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+  .topbar-logo{font-weight:700;color:var(--color-institutional)}
+  .topbar-nav{display:flex;gap:1.25rem}
+  .topbar-actions{display:flex;gap:.75rem}
+  .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+  .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+  .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+  /* Main */
+  .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+
+  /* Hero / buscador */
+  .hero{display:grid;gap:.75rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem;margin-bottom:1rem}
+  .search{display:flex;gap:.5rem;flex-wrap:wrap}
+  .input{flex:1;border:1px solid var(--color-border);border-radius:.5rem;padding:.6rem;background:#fff}
+  .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.6rem .9rem;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+
+  /* Catálogo de categorías */
+  .cats{display:grid;gap:.75rem;grid-template-columns:1fr}
+  @media(min-width:900px){.cats{grid-template-columns:repeat(3,1fr)}}
+  .cat{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1rem}
+  .cat h3{display:flex;justify-content:space-between;align-items:center}
+  .tag{background:var(--color-bg);border-radius:9999px;padding:.2rem .55rem;font-size:.8rem;font-weight:700}
+
+  /* FAQ */
+  .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+  .card-body{padding:1rem}
+  details{border-top:1px solid var(--color-border);padding:.35rem 0}
+  details:first-of-type{border-top:0}
+  summary{cursor:pointer;list-style:none;padding:.5rem 0;font-weight:700}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}
+  details[open] summary{color:var(--color-institutional)}
+  .answer{padding:.35rem 0 .6rem}
+  .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:.35rem;padding:.05rem .35rem}
+
+  /* Ayuda adicional */
+  .help-grid{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media(min-width:1100px){.help-grid{grid-template-columns:2fr 1fr}}
+  .aside{position:sticky;top:4.5rem;height:fit-content;display:grid;gap:1rem}
+  .card-header{padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+  .list{display:grid;gap:.5rem}
+  .item{display:flex;gap:.5rem;align-items:flex-start}
+  .emoji{font-size:1.2rem}
+
+  /* Feedback */
+  .fb{display:flex;gap:.5rem;align-items:center;margin-top:.6rem}
+  .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+</style>
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Hero / búsqueda -->
+    <section class="hero" role="search">
+      <h1>Centro de ayuda</h1>
+      <p class="muted">Encuentra respuestas rápidas o contáctanos. (Demo estático)</p>
+      <div class="search">
+        <input id="q" class="input" placeholder="Buscar por palabra clave (ej. convocatoria, mentoría, trámite)"/>
+        <button id="clear" class="btn">Limpiar</button>
+        <a class="btn btn-primary" href="#faq">Ver preguntas</a>
+      </div>
+      <div class="cats" aria-label="Categorías destacadas">
+        <a class="cat" href="#faq-convocatorias"><h3>Convocatorias <span class="tag">8</span></h3><p class="muted">Postulación, requisitos, cronograma.</p></a>
+        <a class="cat" href="#faq-academia"><h3>Academia & Mentoría <span class="tag">6</span></h3><p class="muted">Cursos, player, certificados, mentores.</p></a>
+        <a class="cat" href="#faq-tramites"><h3>Trámites <span class="tag">7</span></h3><p class="muted">Estados, documentos, tiempos y subsanaciones.</p></a>
+      </div>
+    </section>
+
+    <!-- FAQ + Aside -->
+    <section class="help-grid">
+      <article id="faq" class="card">
+        <div class="card-header">Preguntas frecuentes</div>
+        <div class="card-body" id="faqBody" aria-live="polite">
+          <!-- Grupo: Convocatorias -->
+          <h2 id="faq-convocatorias" style="margin:.25rem 0">Convocatorias</h2>
+          <details data-tags="convocatoria postular cronograma requisitos">
+            <summary>¿Cómo me postulo a una convocatoria?</summary>
+            <div class="answer">
+              Desde <a href="convocatorias.html">Convocatorias</a>, abre el detalle y usa <b>Postular</b>. En esta demo no se envían datos reales.
+            </div>
+          </details>
+          <details data-tags="convocatoria requisitos documentos">
+            <summary>¿Qué documentos suelen pedir?</summary>
+            <div class="answer">
+              Depende del programa: pitch, plan de trabajo y documentación legal básica (simulada aquí).
+            </div>
+          </details>
+          <details data-tags="convocatoria estado resultado fechas">
+            <summary>¿Cuándo sabré si fui seleccionado?</summary>
+            <div class="answer">
+              En el detalle verás el <b>cronograma</b> y en tu panel el estado (datos estáticos en el prototipo).
+            </div>
+          </details>
+
+          <!-- Grupo: Academia -->
+          <h2 id="faq-academia" style="margin:.75rem 0 .25rem">Academia & Mentoría</h2>
+          <details data-tags="curso player subtitulos vtt accesibilidad">
+            <summary>¿El player tiene subtítulos?</summary>
+            <div class="answer">
+              Sí. Usa <span class="kbd">CC</span> para activar/desactivar (WebVTT). Atajos: <span class="kbd">Espacio</span>, <span class="kbd">←/→</span>, <span class="kbd">F</span>, <span class="kbd">P</span>.
+            </div>
+          </details>
+          <details data-tags="mentor mentoría disponibilidad">
+            <summary>¿Cómo reservo mentoría?</summary>
+            <div class="answer">
+              Desde el perfil del mentor, usa <b>Solicitar mentoría</b> (simulado).
+            </div>
+          </details>
+          <details data-tags="certificado academia curso">
+            <summary>¿Obtengo certificado al completar?</summary>
+            <div class="answer">
+              En cursos marcados como <b>Certificable</b> sí (mock).
+            </div>
+          </details>
+
+          <!-- Grupo: Trámites -->
+          <h2 id="faq-tramites" style="margin:.75rem 0 .25rem">Trámites</h2>
+          <details data-tags="tramite estados linea tiempo observaciones">
+            <summary>¿Cómo sigo el estado de mi trámite?</summary>
+            <div class="answer">
+              En <a href="tramites.html">Trámites</a> verás la línea de tiempo (Enviado, Revisión, Observado, Aprobado).
+            </div>
+          </details>
+          <details data-tags="tramite documentos formatos tamanos">
+            <summary>¿Qué formatos de archivo aceptan?</summary>
+            <div class="answer">
+              PDF/JPG/PNG hasta 10MB (demo). Si un archivo es grande, comprímelo sin perder legibilidad.
+            </div>
+          </details>
+          <details data-tags="tramite observacion subsanar">
+            <summary>Recibí una observación, ¿qué hago?</summary>
+            <div class="answer">
+              En el paso <b>Documentos</b> vuelve a subir el archivo requerido y continúa al envío.
+            </div>
+          </details>
+
+          <!-- Grupo: Cuenta -->
+          <h2 id="faq-cuenta" style="margin:.75rem 0 .25rem">Cuenta & Soporte</h2>
+          <details data-tags="cuenta acceso login">
+            <summary>No puedo acceder a mi cuenta</summary>
+            <div class="answer">
+              Usa “¿Olvidaste tu contraseña?” o contáctanos por correo. En el prototipo es estático.
+            </div>
+          </details>
+          <details data-tags="soporte contacto ayuda ticket">
+            <summary>¿Cómo contacto soporte?</summary>
+            <div class="answer">
+              Desde <a href="#contacto">Contacto</a> o el botón <b>Chatear</b> (simulado).
+            </div>
+          </details>
+        </div>
+
+        <!-- Feedback de artículo -->
+        <div class="card-body" id="fb">
+          <div class="muted">¿Esto te ayudó?</div>
+          <div class="fb">
+            <button class="btn" data-fb="sí">Sí</button>
+            <button class="btn" data-fb="no">No</button>
+            <span id="fbMsg" class="muted" aria-live="polite"></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Aside -->
+      <aside class="aside">
+        <div class="card" id="contacto">
+          <div class="card-header">Contacto</div>
+          <div class="card-body list">
+            <div class="item"><div class="emoji">💬</div><div><b>Chat</b><br/><span class="muted">Horario hábil — demo</span></div><a class="btn" href="#">Chatear</a></div>
+            <div class="item"><div class="emoji">✉️</div><div><b>Correo</b><br/><span class="muted">respuestas en 24–48h</span></div><a class="btn" href="mailto:soporte@aneir.do">Enviar</a></div>
+            <div class="item"><div class="emoji">📚</div><div><b>Guías</b><br/><span class="muted">Pasos y buenas prácticas</span></div><a class="btn" href="#faq">Abrir</a></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Sugerencias rápidas</div>
+          <div class="card-body list">
+            <div class="item">✔ Usa palabras clave claras al buscar.</div>
+            <div class="item">✔ Prefiere <b>Detalles</b> de cada pantalla para info específica.</div>
+            <div class="item">✔ Si algo no aparece, revisa filtros o estado.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Estados del sistema</div>
+          <div class="card-body">
+            <p class="muted">Sin incidencias reportadas.</p>
+            <span class="chip">Uptime 99.9%</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // Filtro rápido por texto (cliente)
+    (function(){
+      const q = document.getElementById('q');
+      const clear = document.getElementById('clear');
+      const details = Array.from(document.querySelectorAll('#faqBody details'));
+      function filter(){
+        const term = (q.value||'').toLowerCase().trim();
+        details.forEach(d=>{
+          const t = d.querySelector('summary').textContent.toLowerCase();
+          const tags = (d.dataset.tags||'').toLowerCase();
+          const match = !term || t.includes(term) || tags.includes(term);
+          d.hidden = !match;
+        });
+      }
+      q.addEventListener('input', filter);
+      clear.addEventListener('click', ()=>{ q.value=''; filter(); q.focus(); });
+      filter();
+    })();
+
+    // Feedback (localStorage)
+    (function(){
+      const msg = document.getElementById('fbMsg');
+      document.querySelectorAll('#fb [data-fb]').forEach(b=>{
+        b.addEventListener('click', ()=>{
+          const val = b.dataset.fb;
+          localStorage.setItem('faq_feedback',''+Date.now()+':'+val);
+          msg.textContent = val==='sí' ? '¡Gracias por tu respuesta!' : 'Gracias, tomamos nota para mejorar.';
+          setTimeout(()=> msg.textContent='', 2500);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

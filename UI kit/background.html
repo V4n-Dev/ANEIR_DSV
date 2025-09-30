@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>background</title>
+  <style>
+    /* ===== Paleta ===== */
+:root{
+  --base-white: #ffffff;
+  --base-gray: #e5e7eb; /* gris sutil para fondo muy leve si quieres */
+  --accent-teal: #14b8a6;
+  --accent-blue: #2563eb;
+}
+
+/* ===== Lienzo ===== */
+.bg-professional{
+  position: relative;
+  min-height: 100vh;
+  padding: 48px 24px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(1200px 800px at 80% 0%, rgba(229,231,235,0.45), transparent 60%),
+    radial-gradient(1000px 700px at 0% 100%, rgba(229,231,235,0.35), transparent 55%),
+    var(--base-white);
+  overflow: hidden; /* oculta el desborde de los blobs */
+}
+
+/* ===== Blobs con blur (acentos) ===== */
+.blob{
+  position: absolute;
+  width: 40vmax;
+  height: 40vmax;
+  filter: blur(90px);
+  opacity: 0.35;                 /* intensidad del color */
+  pointer-events: none;
+  z-index: 0;
+  transform: translate3d(0,0,0); /* evita artefactos en algunos navegadores */
+}
+
+/* Teal arriba-izquierda */
+.blob-teal{
+  background: radial-gradient(circle at 30% 30%, var(--accent-teal), transparent 60%);
+  top: -15vmax;
+  left: -10vmax;
+}
+
+/* Blue abajo-derecha */
+.blob-blue{
+  background: radial-gradient(circle at 70% 70%, var(--accent-blue), transparent 60%);
+  bottom: -18vmax;
+  right: -12vmax;
+}
+
+/* ===== Tarjeta del formulario ===== */
+.form-card{
+  position: relative;
+  z-index: 1; /* por encima de los blobs */
+  width: min(560px, 92vw);
+  background: var(--base-white);
+  border: 1px solid rgba(229,231,235,0.8); /* #e5e7eb */
+  border-radius: 16px;
+  box-shadow:
+    0 10px 30px rgba(37,99,235,0.06),   /* sombra azul muy suave */
+    0 6px 18px rgba(20,184,166,0.05);   /* sombra teal muy suave */
+  padding: 28px;
+}
+
+/* Estilos base de inputs (opcional) */
+.form-card input{
+  width: 100%;
+  padding: 12px 14px;
+  margin: 10px 0 16px;
+  border: 1px solid var(--base-gray);
+  border-radius: 10px;
+  background: #fff;
+  outline: none;
+}
+.form-card input:focus{
+  border-color: #2563eb33; /* azul con transparencia */
+  box-shadow: 0 0 0 6px #2563eb1a; /* foco accesible */
+}
+
+.form-card button{
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+.form-card h2{
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+}
+
+/* ===== Preferencias de usuario ===== */
+/* Reduce la “fuerza” visual si el usuario prefiere menos movimiento/efectos */
+@media (prefers-reduced-motion: reduce){
+  .blob{ filter: blur(70px); opacity: 0.28; }
+}
+
+  </style>
+  <link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Estructura mínima -->
+<div class="bg-professional">
+  <!-- Blobs difuminados -->
+  <span class="blob blob-teal"></span>
+  <span class="blob blob-blue"></span>
+
+  <!-- Tu formulario -->
+  <div class="form-card">
+    <!-- coloca aquí tu <form> -->
+    <h2>Formulario</h2>
+    <input type="text" placeholder="Nombre" />
+    <input type="email" placeholder="Email" />
+    <button>Enviar</button>
+  </div>
+</div>
+
+</body>
+</html>

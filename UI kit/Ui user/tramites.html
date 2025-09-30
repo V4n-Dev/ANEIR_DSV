@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Trámites — Activación Inversionista | ANEIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+      --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+      --color-surface:#ffffff; --color-border:#d1d5db;
+      --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+      --ok:#16a34a; --warn:#f59e0b; --danger:#dc2626; --info:#0ea5e9;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+    a{text-decoration:none;color:var(--color-primary)}
+
+    /* Topbar + Sidebar (menú unificado) */
+    .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+    .topbar-logo a{font-weight:700;color:var(--color-institutional)}
+    .topbar-nav{display:flex;gap:1.25rem}
+    .topbar-nav a{font-weight:600;color:var(--color-text)}
+    .topbar-nav a.active{color:var(--color-primary)}
+    .topbar-actions{display:flex;gap:.5rem;align-items:center}
+    .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+    .icon-btn.avatar{background:var(--color-institutional);color:#fff}
+
+    .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+    .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+    .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+    /* Main */
+    .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+    h1,h2{color:var(--color-institutional)}
+    .muted{color:var(--color-muted)}
+    .breadcrumb{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.75rem;font-size:.9rem}
+    .breadcrumb .sep{opacity:.6}
+
+    /* Cards & layout */
+    .grid{display:grid;gap:1rem}
+    .grid-2{grid-template-columns:1fr}
+    @media(min-width:1100px){ .grid-2{grid-template-columns:2fr 1fr} }
+
+    .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+    .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+    .card-body{padding:1rem}
+
+    .progress{height:10px;background:#eef2ff;border-radius:9999px;overflow:hidden;border:1px solid var(--color-border)}
+    .bar{height:100%;background:var(--color-primary);width:40%}
+
+    /* Steps / checklist */
+    .steps{display:grid;gap:.75rem}
+    .step{border:1px solid var(--color-border);border-radius:.6rem;padding:1rem;background:#f8fafc}
+    .step-header{display:flex;justify-content:space-between;gap:.75rem;align-items:center;flex-wrap:wrap}
+    .badges{display:flex;gap:.35rem;flex-wrap:wrap}
+    .badge{display:inline-block;border-radius:9999px;padding:.15rem .55rem;font-size:.75rem;font-weight:700}
+    .badge.ok{background:#dcfce7;color:#065f46}
+    .badge.warn{background:#fffbeb;color:#92400e}
+    .badge.info{background:#e0f2fe;color:#075985}
+    .badge.todo{background:#e5e7eb;color:#374151}
+
+    .actions{display:flex;gap:.5rem;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.5rem .9rem;font-weight:600;cursor:pointer}
+    .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .btn-ghost{background:transparent;border:1px dashed var(--color-border)}
+    .hint{font-size:.85rem;color:var(--color-muted)}
+
+    /* Timeline / Ayudas */
+    .timeline{display:grid;gap:.75rem}
+    .event{display:flex;gap:.6rem}
+    .dot{width:.6rem;height:.6rem;border-radius:9999px;margin-top:.45rem;background:var(--color-primary)}
+    .event .meta{font-size:.85rem;color:var(--color-muted)}
+
+    .faq{display:grid;gap:.5rem}
+    .faq-item{border:1px solid var(--color-border);border-radius:.6rem;padding:.75rem}
+
+    /* Alertas */
+    .alert{display:flex;gap:.6rem;border-radius:.5rem;padding:.6rem .8rem;margin:.5rem 0}
+    .alert.info{border:1px solid #bae6fd;background:#eff6ff}
+    .alert.warn{border:1px solid #fed7aa;background:#fff7ed}
+    .alert.ok{border:1px solid #bbf7d0;background:#f0fdf4}
+  </style>
+</head>
+<body>
+  <!-- MENÚ UNIFICADO (mismo en todo el perfil inversionista) -->
+  <header class="topbar" role="banner">
+    <div class="topbar-logo"><a href="index.html">ANEIR</a></div>
+    <nav class="topbar-nav" aria-label="Principal">
+      <a href="index.html">Inicio</a>
+      <a href="marketplace.html">Marketplace</a>
+      <a href="ayuda_faq.html">Ayuda</a>
+    </nav>
+    <div class="topbar-actions">
+      <button class="icon-btn" aria-label="Notificaciones">🔔</button>
+      <a class="icon-btn avatar" href="perfil.html" title="Perfil">A</a>
+    </div>
+  </header>
+
+  <aside class="sidebar" aria-label="Secundaria">
+    <nav class="sidebar-nav">
+      <a href="index.html">Mi Panel</a>
+      <a href="marketplace.html">Descubrir Startups</a>
+      <hr/>
+      <a href="ayuda_faq.html">Ayuda / FAQ</a>
+    </nav>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Inicio</a><span class="sep">/</span>
+      <span aria-current="page">Trámites de Activación</span>
+      <span class="muted" style="margin-left:auto">Demo estática</span>
+    </nav>
+
+    <!-- Encabezado + progreso -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h1>Trámites de Activación del Inversionista</h1>
+          <div class="muted">Completa estos pasos para habilitar el acceso a *data rooms*, contacto directo y solicitudes.</div>
+        </div>
+        <div style="min-width:220px">
+          <div class="muted" style="font-weight:700;margin-bottom:.25rem">Progreso: 40%</div>
+          <div class="progress" aria-label="Progreso de activación"><div class="bar" style="width:40%"></div></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="alert info" role="status">
+          <div>ℹ️</div>
+          <div><b>Tip:</b> Puedes avanzar los pasos en cualquier orden. Los datos y archivos son simulados (no se envían).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layout principal -->
+    <section class="grid grid-2" style="margin-top:1rem">
+      <article class="card">
+        <div class="card-header">
+          <span>Checklist</span>
+          <div class="actions">
+            <a class="btn-ghost" href="index.html">Volver al panel</a>
+            <a class="btn btn-primary" href="marketplace.html">Explorar startups</a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="steps">
+
+            <!-- Paso 1: KYC/AML -->
+            <div class="step" id="step-kyc">
+              <div class="step-header">
+                <div>
+                  <h2 style="margin-bottom:.2rem">1) Verificación de identidad (KYC/AML)</h2>
+                  <div class="hint">Documento de identidad, selfie (mock) y cruce listas AML.</div>
+                </div>
+                <div class="badges">
+                  <span class="badge info">En progreso</span>
+                </div>
+              </div>
+              <div class="actions" style="margin-top:.5rem">
+                <button class="btn btn-primary" disabled>Iniciar verificación</button>
+                <button class="btn">Cargar documento</button>
+                <button class="btn">Ver política de privacidad</button>
+              </div>
+            </div>
+
+            <!-- Paso 2: Acreditación de Inversionista -->
+            <div class="step" id="step-accred">
+              <div class="step-header">
+                <div>
+                  <h2 style="margin-bottom:.2rem">2) Acreditación de inversionista</h2>
+                  <div class="hint">Confirma ingresos/patrimonio o certificación de entidad, según jurisdicción (mock).</div>
+                </div>
+                <div class="badges">
+                  <span class="badge todo">Pendiente</span>
+                </div>
+              </div>
+              <div class="actions" style="margin-top:.5rem">
+                <button class="btn">Subir comprobantes</button>
+                <button class="btn">Descargar formato</button>
+              </div>
+            </div>
+
+            <!-- Paso 3: Declaración fiscal y residencia -->
+            <div class="step" id="step-tax">
+              <div class="step-header">
+                <div>
+                  <h2 style="margin-bottom:.2rem">3) Declaración fiscal y residencia</h2>
+                  <div class="hint">País de residencia, NIF/RNC si aplica, y tratamiento de retenciones (mock).</div>
+                </div>
+                <div class="badges">
+                  <span class="badge ok">Completado</span>
+                </div>
+              </div>
+              <div class="actions" style="margin-top:.5rem">
+                <button class="btn">Actualizar datos</button>
+                <button class="btn">Descargar comprobante</button>
+              </div>
+            </div>
+
+            <!-- Paso 4: NDA / Documentos -->
+            <div class="step" id="step-nda">
+              <div class="step-header">
+                <div>
+                  <h2 style="margin-bottom:.2rem">4) NDA y documentos</h2>
+                  <div class="hint">Acuerdo de confidencialidad para acceso a *data rooms*; plantillas SAFE/Term Sheet (mock).</div>
+                </div>
+                <div class="badges">
+                  <span class="badge todo">Pendiente</span>
+                </div>
+              </div>
+              <div class="actions" style="margin-top:.5rem">
+                <button class="btn">Revisar NDA</button>
+                <button class="btn">Subir firmado</button>
+                <button class="btn">Ver plantillas</button>
+              </div>
+            </div>
+
+            <!-- Paso 5: Firma electrónica -->
+            <div class="step" id="step-sign">
+              <div class="step-header">
+                <div>
+                  <h2 style="margin-bottom:.2rem">5) Firma electrónica</h2>
+                  <div class="hint">Configura un método de firma para solicitudes y acuerdos (mock).</div>
+                </div>
+                <div class="badges">
+                  <span class="badge warn">Requiere acción</span>
+                </div>
+              </div>
+              <div class="actions" style="margin-top:.5rem">
+                <button class="btn btn-primary">Configurar firma</button>
+                <button class="btn">Probar firma</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </article>
+
+      <!-- Aside: timeline + ayuda -->
+      <aside class="card">
+        <div class="card-header">
+          <span>Estado & Actividad</span>
+          <span class="muted">Actualizado hoy</span>
+        </div>
+        <div class="card-body">
+          <div class="alert ok" role="status">
+            <div>✅</div>
+            <div><b>Fiscalidad actualizada:</b> Declaración 2025 registrada.</div>
+          </div>
+          <div class="alert warn" role="status">
+            <div>⚠️</div>
+            <div><b>Firma pendiente:</b> Activa tu método de firma para enviar solicitudes.</div>
+          </div>
+
+          <h3 style="margin:.75rem 0 .35rem">Timeline</h3>
+          <div class="timeline">
+            <div class="event">
+              <div class="dot"></div>
+              <div>
+                <div>Se verificó residencia fiscal (RD) y RNC.</div>
+                <div class="meta">hace 3 días</div>
+              </div>
+            </div>
+            <div class="event">
+              <div class="dot" style="background:var(--info)"></div>
+              <div>
+                <div>Revisión inicial KYC creada.</div>
+                <div class="meta">hace 1 semana</div>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin:1rem 0 .35rem">Ayuda rápida</h3>
+          <div class="faq">
+            <div class="faq-item">
+              <b>¿Por qué necesito KYC/AML?</b>
+              <div class="muted">Para habilitar contacto con startups y revisar documentos sensibles.</div>
+            </div>
+            <div class="faq-item">
+              <b>¿Qué prueba de acreditación vale?</b>
+              <div class="muted">Comprobantes de ingresos/patrimonio o certificación de entidad (demo).</div>
+            </div>
+            <div class="faq-item">
+              <b>¿Qué es el NDA?</b>
+              <div class="muted">Acuerdo de confidencialidad para compartir data no pública.</div>
+            </div>
+          </div>
+
+          <hr style="margin:1rem 0;border-color:var(--color-border)">
+          <div class="actions">
+            <a class="btn" href="index.html">Volver al panel</a>
+            <a class="btn" href="marketplace.html">Ir al marketplace</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

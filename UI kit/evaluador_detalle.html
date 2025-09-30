@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Evaluación — AgroIA SRL | ANEIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Tokens coherentes ===== */
+    :root{
+      --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+      --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+      --color-surface:#ffffff; --color-border:#d1d5db;
+      --ok:#16a34a; --warn:#f59e0b; --err:#b91c1c;
+      --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+    a{color:var(--color-primary);text-decoration:none}
+    h1,h2{color:var(--color-institutional)}
+    .muted{color:var(--color-muted)}
+
+    /* Topbar */
+    .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+    .topbar-logo{font-weight:700;color:var(--color-institutional)}
+    .topbar-nav{display:flex;gap:1.25rem}
+    .topbar-actions{display:flex;gap:.75rem}
+    .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+
+    /* Sidebar */
+    .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+    .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+    .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+    /* Main */
+    .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+    .breadcrumb{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem;font-size:.9rem}
+    .breadcrumb .sep{opacity:.6}
+
+    /* Layout */
+    .content{display:grid;gap:1rem;grid-template-columns:1fr}
+    @media(min-width:1100px){ .content{grid-template-columns:2fr 1fr} }
+    .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md)}
+    .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+    .card-body{padding:1rem}
+    .card:nth-child(2){padding:1.5rem}
+    .aside{position:sticky;top:4.5rem;display:grid;gap:1rem;height:fit-content}
+
+    /* Tabs accesibles (APG: manual activation) */
+    .tabs{position:sticky;top:4.25rem;z-index:5;display:flex;gap:.25rem;overflow-x:auto;background:#fff;border:1px solid var(--color-border);border-radius:.75rem;padding:.25rem;box-shadow:var(--shadow-md)}
+    .tab{appearance:none;border:1px solid transparent;background:transparent;color:var(--color-institutional);font-weight:700;cursor:pointer;padding:.6rem .9rem;border-radius:.6rem;white-space:nowrap}
+    .tab:is(:hover,:focus-visible){background:#f8fafc;outline:none}
+    .tab.is-active{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .panel[hidden]{display:none}
+
+    /* Table patterns */
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    th,td{padding:.6rem;border-bottom:1px solid var(--color-border);text-align:left}
+    thead th{position:sticky;top:0;background:#f8fafc;z-index:1}
+    caption{caption-side:top;text-align:left;font-weight:700;color:var(--color-institutional);padding:.25rem 0}
+
+    /* Task list (GOV.UK-like) */
+    .task-list{list-style:none;padding:0;margin:0}
+    .task{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--color-border);border-radius:.6rem;padding:.6rem .75rem;margin-bottom:.5rem;background:#fff}
+    .status{font-weight:700}
+    .status.ok{color:var(--ok)} .status.warn{color:var(--warn)} .status.err{color:var(--err)}
+
+    /* Chips & buttons */
+    .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+    .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.55rem .9rem;font-weight:600;cursor:pointer}
+    .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .ghost{background:transparent;border:1px solid var(--color-border)}
+  </style>
+  <link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+        <div class="topbar-logo">ANEIR</div>
+
+        <nav class="topbar-nav">
+            <a href="index.html" data-route="index">Inicio</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="convocatorias.html" data-route="convocatorias">Convocatorias</a>
+            <a href="academia_mentoria.html" data-route="academia">Academia & Mentoría</a>
+            <a href="tramites.html" data-route="tramites">Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+        </nav>
+
+        <div class="topbar-actions">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn" style="background-color: var(--color-institutional); color: var(--color-white);">A</div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="index.html" data-route="index">Mi Panel (Dashboard)</a>
+            <a href="marketplace.html" data-route="marketplace">Marketplace</a>
+            <a href="evaluador_lista.html" data-route="evaluador">Panel Evaluador</a>
+            <a href="tramites.html" data-route="tramites">Mis Trámites</a>
+            <a href="reportes.html" data-route="reportes">Reportes</a>
+            <a href="portafolio.html" data-route="portafolio">Portafolio</a>
+            <a href="perfil.html" data-route="perfil">Perfil</a>
+            <hr/>
+            <a href="ayuda.html" data-route="ayuda">Ayuda / FAQ</a>
+        </nav>
+    </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Inicio</a>
+      <span class="sep">/</span>
+      <a href="evaluador_lista.html">Panel Evaluador</a>
+      <span class="sep">/</span>
+      <span aria-current="page">AgroIA SRL</span>
+    </nav>
+
+    <header style="margin-bottom:.75rem">
+      <h1>Evaluación — AgroIA SRL</h1>
+      <p class="muted">Dossier para evaluación y dictamen. (Datos estáticos de demo)</p>
+    </header>
+
+    <section class="content">
+      <article>
+        <!-- Tabs -->
+        <nav class="tabs" role="tablist" aria-label="Secciones de evaluación">
+          <button class="tab is-active" role="tab" aria-selected="true" aria-controls="p-resumen" id="t-resumen">Resumen</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-kpis" id="t-kpis">KPIs</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-documentos" id="t-documentos">Documentos</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-notas" id="t-notas">Notas</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-decision" id="t-decision">Decisión</button>
+        </nav>
+
+        <!-- Panel: Resumen -->
+        <section id="p-resumen" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-resumen">
+          <h2>Resumen ejecutivo</h2>
+          <p>AgroIA ofrece visión por computadora para agro. Ticket buscado: <b>US$50k–200k</b>. Modelo <b>SaaS B2B</b>, 12 clientes en piloto, IA Score <b>82</b>.</p>
+
+          <h3 style="margin-top:.75rem">Checklist de evaluación</h3>
+          <ul class="task-list" aria-label="Lista de chequeo">
+            <li class="task"><span>Revisión de equipo fundador</span><span class="status ok">Completado</span></li>
+            <li class="task"><span>Validación de mercado</span><span class="status ok">Completado</span></li>
+            <li class="task"><span>Revisión técnica (modelo IA)</span><span class="status warn">En progreso</span></li>
+            <li class="task"><span>Due diligence legal</span><span class="status">Pendiente</span></li>
+          </ul>
+        </section>
+
+        <!-- Panel: KPIs -->
+        <section id="p-kpis" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-kpis" hidden>
+          <h2>KPIs y matriz de puntaje</h2>
+
+          <!-- Matriz de puntaje (scorecard) -->
+          <table style="margin-top:.25rem">
+            <caption>Matriz de criterios (peso y puntaje)</caption>
+            <thead>
+              <tr>
+                <th scope="col">Criterio</th>
+                <th scope="col">Peso</th>
+                <th scope="col">Puntaje (0–10)</th>
+                <th scope="col">Puntaje ponderado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Equipo</th><td>30%</td><td>8.5</td><td>2.55</td></tr>
+              <tr><th scope="row">Mercado</th><td>25%</td><td>8.0</td><td>2.00</td></tr>
+              <tr><th scope="row">Producto/IA</th><td>25%</td><td>8.2</td><td>2.05</td></tr>
+              <tr><th scope="row">Tracción</th><td>20%</td><td>7.8</td><td>1.56</td></tr>
+            </tbody>
+            <tfoot>
+              <tr><th scope="row">Total</th><td>100%</td><td>—</td><td><b>8.16</b></td></tr>
+            </tfoot>
+          </table>
+          <p class="muted" style="margin-top:.35rem">Tablas con <code>caption</code> y <code>scope</code> mejoran la comprensión en lectores de pantalla. :contentReference[oaicite:5]{index=5}</p>
+
+          <!-- Tabla de métricas -->
+          <table style="margin-top:.75rem">
+            <caption>Métricas de crecimiento (3 meses)</caption>
+            <thead><tr><th>Mes</th><th>MRR</th><th>Clientes</th><th>Churn</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Jul</th><td>US$ 8.7k</td><td>10</td><td>3.5%</td></tr>
+              <tr><th scope="row">Ago</th><td>US$ 9.1k</td><td>11</td><td>3.2%</td></tr>
+              <tr><th scope="row">Sep</th><td>US$ 9.5k</td><td>12</td><td>3.1%</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Panel: Documentos -->
+        <section id="p-documentos" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-documentos" hidden>
+          <h2>Documentos</h2>
+          <table>
+            <caption>Archivos entregados</caption>
+            <thead><tr><th>Documento</th><th>Tipo</th><th>Estado</th><th>Acción</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Pitch deck</th><td>PDF</td><td>Aprobado</td><td><a href="#">Ver</a></td></tr>
+              <tr><th scope="row">Resumen ejecutivo</th><td>PDF</td><td>Aprobado</td><td><a href="#">Ver</a></td></tr>
+              <tr><th scope="row">Métricas mensuales</th><td>CSV</td><td>En revisión</td><td><a href="#">Ver</a></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Panel: Notas -->
+        <section id="p-notas" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-notas" hidden>
+          <h2>Notas del comité</h2>
+          <div class="card" style="margin-top:.5rem">
+            <div class="card-header">Observaciones</div>
+            <div class="card-body">
+              <ul>
+                <li>Validación fuerte en agroexportadoras, riesgo en estacionalidad.</li>
+                <li>Modelo de IA: pedir benchmark adicional con dataset externo.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="margin-top:.5rem">
+            <div class="card-header">Historial</div>
+            <div class="card-body">
+              <ul>
+                <li><b>12 Sep</b> — Solicitud de métricas firmadas.</li>
+                <li><b>18 Sep</b> — Se adjuntan métricas; pendiente verificación.</li>
+                <li><b>22 Sep</b> — Programada sesión técnica.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Panel: Decisión -->
+        <section id="p-decision" class="card card-body panel" role="tabpanel" tabindex="0" aria-labelledby="t-decision" hidden>
+          <h2>Decisión</h2>
+          <p class="muted">Documento de dictamen — simulado (no envía datos).</p>
+
+          <table style="margin-top:.5rem">
+            <caption>Resumen de dictamen</caption>
+            <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Recomendación</th><td>Aprobar a comité de inversión</td></tr>
+              <tr><th scope="row">Ticket sugerido</th><td>US$ 150k</td></tr>
+              <tr><th scope="row">Condiciones</th><td>Hit técnico en 60 días; 3 clientes nuevos en 90 días</td></tr>
+              <tr><th scope="row">Riesgos</th><td>Ciclos de venta y clima</td></tr>
+            </tbody>
+          </table>
+
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem">
+            <button class="btn ghost">Solicitar más info</button>
+            <button class="btn" style="border-color:var(--warn);color:var(--warn)">Rechazar (demo)</button>
+            <button class="btn btn-primary">Aprobar (demo)</button>
+          </div>
+          <p class="muted" style="margin-top:.35rem">Usa procesos y criterios objetivos (scorecards/benchmarks) para decisiones consistentes. :contentReference[oaicite:6]{index=6}</p>
+        </section>
+      </article>
+
+      <!-- Aside -->
+      <aside class="aside">
+        <div class="card">
+          <div class="card-header">Resumen rápido</div>
+          <div class="card-body">
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <span class="chip">IA Score: 82</span>
+              <span class="chip">MRR: US$ 9.5k</span>
+              <span class="chip">Clientes: 12</span>
+              <span class="chip">B2B</span>
+            </div>
+            <div style="margin-top:.6rem;display:flex;gap:.5rem;flex-wrap:wrap">
+              <a class="btn ghost" href="startup_perfil.html">Ver perfil</a>
+              <a class="btn" href="#p-documentos">Documentos</a>
+              <a class="btn btn-primary" href="#p-decision">Ir a decisión</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Participantes</div>
+          <div class="card-body">
+            <ul>
+              <li><b>Tú</b> (Evaluador)</li>
+              <li>Comité técnico</li>
+              <li>Comité inversión</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- JS: Tabs accesibles (APG, activación manual) -->
+  <script>
+    (function(){
+      const tabs = Array.from(document.querySelectorAll('[role="tablist"] [role="tab"]'));
+      const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+
+      function activate(i,{focus=false}={}){
+        tabs.forEach((t,idx)=>{
+          const on = idx===i;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          panels[idx].hidden = !on;
+          if(on && focus) t.focus();
+        });
+      }
+      tabs.forEach((t,i)=>{
+        t.addEventListener('click',()=>activate(i));
+        t.addEventListener('keydown',(e)=>{
+          let idx=tabs.indexOf(document.activeElement);
+          if(e.key==='ArrowRight'){e.preventDefault();idx=(idx+1)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='ArrowLeft'){e.preventDefault();idx=(idx-1+tabs.length)%tabs.length;tabs[idx].focus();}
+          else if(e.key==='Home'){e.preventDefault();tabs[0].focus();}
+          else if(e.key==='End'){e.preventDefault();tabs[tabs.length-1].focus();}
+          else if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(idx);}
+        });
+      });
+      activate(0);
+    })();
+  </script>
+</body>
+</html>

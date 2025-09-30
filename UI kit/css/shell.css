@@ -1,0 +1,37 @@
+:root{
+  --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+  --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+  --color-surface:#fff; --color-border:#d1d5db;
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg)}
+a{text-decoration:none;color:var(--color-primary)}
+
+.skip{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+.skip:focus{position:fixed;left:1rem;top:1rem;width:auto;height:auto;background:#fff;border:2px solid var(--color-primary);border-radius:.4rem;padding:.4rem .6rem;z-index:2000}
+
+/* Topbar */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:var(--color-surface);border-bottom:1px solid var(--color-border);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 .75rem}
+.topbar-logo{font-weight:700;color:var(--color-institutional)}
+.topbar-logo a{color:inherit}
+.topbar-nav{display:flex;gap:1rem;align-items:center;overflow-x:auto}
+.topbar-nav a{color:var(--color-text);padding:.35rem .5rem;border-radius:.4rem;white-space:nowrap}
+.topbar-nav a[aria-current="page"]{background:var(--color-primary);color:#fff}
+.topbar-actions{display:flex;gap:.5rem}
+.icon-btn{width:2rem;height:2rem;border-radius:9999px;background:var(--color-bg);display:grid;place-items:center}
+.avatar{background:var(--color-institutional)!important;color:#fff}
+
+/* Sidebar */
+.sidebar{position:fixed;top:56px;left:0;width:224px;height:calc(100vh - 56px);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem;overflow:auto}
+.sidebar-nav{display:flex;flex-direction:column;gap:.25rem}
+.sidebar-nav a{color:var(--color-text);padding:.5rem;border-radius:.5rem}
+.sidebar-nav a.active{background:#eef2ff;color:#3730a3;font-weight:700}
+
+/* Main layout helper:
+   Asegúrate de que las páginas tengan <main id="main" class="app-main"> */
+.app-main{padding:5rem 2rem 2rem calc(224px + 2rem);min-height:100vh}
+@media (max-width: 900px){
+  .sidebar{display:none}
+  .app-main{padding:5rem 1rem 1rem 1rem}
+}

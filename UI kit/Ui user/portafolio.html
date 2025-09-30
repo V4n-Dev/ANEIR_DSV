@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Portafolio — Inversionista | ANEIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+      --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+      --color-surface:#ffffff; --color-border:#d1d5db; --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+      --gain:#16a34a; --loss:#dc2626; --warn:#f59e0b;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6;display:flex}
+    a{text-decoration:none;color:var(--color-primary)}
+    /* Topbar + Sidebar (menú unificado: Inicio, Marketplace, Ayuda; avatar → Perfil) */
+    .topbar{position:fixed;top:0;left:0;width:100%;background:var(--color-surface);box-shadow:var(--shadow-md);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem}
+    .topbar-logo a{font-weight:700;color:var(--color-institutional)}
+    .topbar-nav{display:flex;gap:1.25rem}
+    .topbar-nav a{font-weight:600;color:var(--color-text)}
+    .topbar-nav a.active{color:var(--color-primary)}
+    .topbar-actions{display:flex;gap:.5rem;align-items:center}
+    .icon-btn{width:2rem;height:2rem;background:var(--color-bg);border-radius:9999px;display:grid;place-items:center;font-weight:700}
+    .icon-btn.avatar{background:var(--color-institutional);color:#fff}
+
+    .sidebar{position:fixed;top:3.5rem;left:0;width:14rem;height:calc(100vh - 3.5rem);background:var(--color-surface);border-right:1px solid var(--color-border);padding:1rem}
+    .sidebar-nav a{display:block;padding:.6rem 0;color:var(--color-text)}
+    .sidebar-nav a.active{color:var(--color-primary);font-weight:700}
+
+    /* Main */
+    .main{flex-grow:1;padding:5rem 2rem 2rem calc(14rem + 2rem)}
+    h1,h2{color:var(--color-institutional)}
+    .muted{color:var(--color-muted)}
+
+    /* Cards y layout */
+    .grid{display:grid;gap:1rem}
+    .grid-2{grid-template-columns:1fr}
+    @media(min-width:1100px){ .grid-2{grid-template-columns:2fr 1fr} }
+    .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);overflow:hidden}
+    .card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--color-border);font-weight:700}
+    .card-body{padding:1rem}
+
+    .kpis{display:grid;gap:.75rem;grid-template-columns:repeat(2,1fr)}
+    @media(min-width:900px){ .kpis{grid-template-columns:repeat(4,1fr)} }
+    .kpi{background:#f8fafc;border:1px solid var(--color-border);border-radius:.6rem;padding:.75rem}
+    .kpi .val{font-size:1.25rem;font-weight:700}
+    .kpi .sub{font-size:.85rem;color:var(--color-muted)}
+    .kpi .delta{font-size:.85rem;font-weight:700}
+    .delta.gain{color:var(--gain)} .delta.loss{color:var(--loss)}
+
+    /* Distribución (barras apiladas) */
+    .stack{display:flex;height:14px;border-radius:9999px;overflow:hidden;border:1px solid var(--color-border);background:#f3f4f6}
+    .seg{height:100%}
+    .legend{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
+    .legend .item{display:flex;align-items:center;gap:.35rem;font-size:.85rem}
+    .sw{width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.06)}
+
+    /* Toolbar de lista */
+    .toolbar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.75rem}
+    .input,.select{border:1px solid var(--color-border);border-radius:.5rem;padding:.5rem .65rem;background:#fff}
+    .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.5rem .9rem;font-weight:600;cursor:pointer}
+    .btn-primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .chip{background:var(--color-bg);padding:.25rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+
+    /* Tabla */
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    th,td{padding:.6rem;border-bottom:1px solid var(--color-border);text-align:left}
+    thead th{position:sticky;top:0;background:#f8fafc;z-index:1}
+    .tag{padding:.15rem .45rem;border-radius:9999px;font-size:.75rem;font-weight:700;display:inline-block}
+    .tag.ok{background:#dcfce7;color:#065f46}
+    .tag.warn{background:#fffbeb;color:#92400e}
+
+    /* Timeline simple */
+    .timeline{display:grid;gap:.75rem}
+    .event{display:flex;gap:.6rem}
+    .dot{width:.6rem;height:.6rem;border-radius:9999px;margin-top:.45rem;background:var(--color-primary)}
+    .event .meta{font-size:.85rem;color:var(--color-muted)}
+
+    /* Breadcrumb / acciones */
+    .breadcrumb{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem;font-size:.9rem}
+    .breadcrumb .sep{opacity:.6}
+    .actions{display:flex;gap:.5rem;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <!-- MENÚ UNIFICADO (usar igual en todas las páginas del perfil inversionista) -->
+  <header class="topbar" role="banner">
+    <div class="topbar-logo"><a href="index.html">ANEIR</a></div>
+    <nav class="topbar-nav" aria-label="Principal">
+      <a href="index.html">Inicio</a>
+      <a href="marketplace.html">Marketplace</a>
+      <a href="ayuda_faq.html">Ayuda</a>
+    </nav>
+    <div class="topbar-actions">
+      <button class="icon-btn" aria-label="Notificaciones">🔔</button>
+      <a class="icon-btn avatar" href="perfil.html" title="Perfil">A</a>
+    </div>
+  </header>
+
+  <aside class="sidebar" aria-label="Secundaria">
+    <nav class="sidebar-nav">
+      <a href="index.html">Mi Panel</a>
+      <a href="marketplace.html">Descubrir Startups</a>
+      <hr/>
+      <a href="ayuda_faq.html">Ayuda / FAQ</a>
+    </nav>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="perfil.html">Perfil</a><span class="sep">/</span><span aria-current="page">Portafolio</span>
+      <span class="muted" style="margin-left:auto">Demo estática</span>
+    </nav>
+
+    <!-- Encabezado + KPIs -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h1>Portafolio</h1>
+          <div class="muted">Resumen de inversiones realizadas por este perfil</div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="btn-export">Exportar CSV</button>
+          <a class="btn btn-primary" href="marketplace.html">Explorar nuevas</a>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="kpis">
+          <div class="kpi">
+            <div class="sub">Total invertido</div>
+            <div class="val">US$ 185,000</div>
+            <div class="delta gain">+US$ 22,300 no realizado</div>
+          </div>
+          <div class="kpi">
+            <div class="sub">Valuación estimada</div>
+            <div class="val">US$ 207,300</div>
+            <div class="delta gain">+12.1%</div>
+          </div>
+          <div class="kpi">
+            <div class="sub">Startups</div>
+            <div class="val">6</div>
+            <div class="delta">2 en seguimiento</div>
+          </div>
+          <div class="kpi">
+            <div class="sub">Eventos recientes</div>
+            <div class="val">4</div>
+            <div class="delta warn">1 alerta</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layout principal -->
+    <section class="grid grid-2" style="margin-top:1rem">
+      <article class="card">
+        <div class="card-header">
+          <span>Distribución y Lista</span>
+          <div class="actions">
+            <input id="q" class="input" placeholder="Buscar startup…" aria-label="Buscar"/>
+            <select id="order" class="select" aria-label="Ordenar">
+              <option value="name">Nombre (A–Z)</option>
+              <option value="val">Valuación</option>
+              <option value="gain">Ganancia</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Distribución por sector (barra apilada) -->
+          <div class="stack" role="img" aria-label="Distribución por sector">
+            <div class="seg" style="width:30%;background:#dbeafe" title="AgroTech 30%"></div>
+            <div class="seg" style="width:25%;background:#fde68a" title="FinTech 25%"></div>
+            <div class="seg" style="width:20%;background:#fbcfe8" title="HealthTech 20%"></div>
+            <div class="seg" style="width:15%;background:#bbf7d0" title="EdTech 15%"></div>
+            <div class="seg" style="width:10%;background:#fecaca" title="Energía 10%"></div>
+          </div>
+          <div class="legend">
+            <span class="item"><span class="sw" style="background:#dbeafe"></span>AgroTech 30%</span>
+            <span class="item"><span class="sw" style="background:#fde68a"></span>FinTech 25%</span>
+            <span class="item"><span class="sw" style="background:#fbcfe8"></span>HealthTech 20%</span>
+            <span class="item"><span class="sw" style="background:#bbf7d0"></span>EdTech 15%</span>
+            <span class="item"><span class="sw" style="background:#fecaca"></span>Energía 10%</span>
+          </div>
+
+          <!-- Tabla -->
+          <div class="toolbar" style="margin-top:1rem">
+            <span class="chip" id="count">6 inversiones</span>
+            <span class="muted">Valores estimados, demo</span>
+          </div>
+
+          <div style="overflow:auto">
+            <table id="tbl">
+              <thead>
+                <tr>
+                  <th>Startup</th><th>Sector</th><th>Etapa</th>
+                  <th>Monto</th><th>Participación</th><th>Val. Est.</th><th>P/L</th><th>Estado</th><th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- filas demo; el JS actualizará orden/filtrado -->
+                <tr data-name="AgroIA" data-val="65000" data-gain="9200">
+                  <td><a href="startup_perfil.html">AgroIA SRL</a></td>
+                  <td>AgroTech</td>
+                  <td>MVP</td>
+                  <td>US$ 50,000</td>
+                  <td>6.5%</td>
+                  <td>US$ 59,200</td>
+                  <td class="delta gain">+US$ 9,200</td>
+                  <td><span class="tag ok">Activa</span></td>
+                  <td><a href="startup_perfil.html">Ver</a></td>
+                </tr>
+                <tr data-name="FinPay" data-val="42000" data-gain="5600">
+                  <td><a href="startup_perfil.html">FinPay</a></td>
+                  <td>FinTech</td>
+                  <td>Tracción</td>
+                  <td>US$ 35,000</td>
+                  <td>2.1%</td>
+                  <td>US$ 40,600</td>
+                  <td class="delta gain">+US$ 5,600</td>
+                  <td><span class="tag ok">Activa</span></td>
+                  <td><a href="startup_perfil.html">Ver</a></td>
+                </tr>
+                <tr data-name="Salud+" data-val="21000" data-gain="-1800">
+                  <td><a href="startup_perfil.html">Salud+</a></td>
+                  <td>HealthTech</td>
+                  <td>Idea</td>
+                  <td>US$ 15,000</td>
+                  <td>1.3%</td>
+                  <td>US$ 13,200</td>
+                  <td class="delta loss">−US$ 1,800</td>
+                  <td><span class="tag warn">Riesgo</span></td>
+                  <td><a href="startup_perfil.html">Ver</a></td>
+                </tr>
+                <tr data-name="AgroData" data-val="28000" data-gain="1600">
+                  <td><a href="startup_perfil.html">AgroData</a></td>
+                  <td>AgroTech</td>
+                  <td>Tracción</td>
+                  <td>US$ 25,000</td>
+                  <td>1.0%</td>
+                  <td>US$ 26,600</td>
+                  <td class="delta gain">+US$ 1,600</td>
+                  <td><span class="tag ok">Activa</span></td>
+                  <td><a href="startup_perfil.html">Ver</a></td>
+                </tr>
+                <tr data-name="EduFlow" data-val="36500" data-gain="11800">
+                  <td><a href="startup_perfil.html">EduFlow</a></td>
+                  <td>EdTech</td>
+                  <td>Crecimiento</td>
+                  <td>US$ 30,000</td>
+                  <td>0.8%</td>
+                  <td>US$ 41,800</td>
+                  <td class="delta gain">+US$ 11,800</td>
+                  <td><span class="tag ok">Activa</span></td>
+                  <td><a href="startup_perfil.html">Ver</a></td>
+                </tr>
+                <tr data-name="EnerNova" data-val="16100" data-gain="-1200">
+                  <td><a href="startup_perfil.html">EnerNova</a></td>
+                  <td>Energía</td>
+                  <td>MVP</td>
+                  <td>US$ 30,000</td>
+                  <td>1.2%</td>
+                  <td>US$ 16,100</td>
+                  <td class="delta loss">−US$ 1,200</td>
+                  <td><span class="tag warn">Riesgo</span></td>
+                  <td><a href="startup_perfil.html">Ver</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+
+      <aside class="card">
+        <div class="card-header">
+          <span>Eventos recientes</span>
+          <a class="muted" href="#">Ver todos</a>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="event">
+              <div class="dot"></div>
+              <div>
+                <div><b>FinPay</b> cerró ronda puente US$400k (SAFE)</div>
+                <div class="meta">hace 3 días</div>
+              </div>
+            </div>
+            <div class="event">
+              <div class="dot"></div>
+              <div>
+                <div><b>AgroIA</b> firmó piloto con agroexportadora (US$24k ARR)</div>
+                <div class="meta">hace 1 semana</div>
+              </div>
+            </div>
+            <div class="event">
+              <div class="dot" style="background:var(--warn)"></div>
+              <div>
+                <div><b>Salud+</b> reportó retraso de hitos (riesgo alto)</div>
+                <div class="meta">hace 2 semanas</div>
+              </div>
+            </div>
+            <div class="event">
+              <div class="dot" style="background:var(--gain)"></div>
+              <div>
+                <div><b>EduFlow</b> superó 1,000 MAU</div>
+                <div class="meta">hace 3 semanas</div>
+              </div>
+            </div>
+          </div>
+
+          <hr style="margin:1rem 0;border-color:var(--color-border)">
+          <div class="actions">
+            <a class="btn" href="marketplace.html">Buscar nuevas</a>
+            <a class="btn" href="perfil.html">Volver al perfil</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- JS: filtro, orden y exportación CSV (demo estático) -->
+  <script>
+    (function(){
+      const q = document.getElementById('q');
+      const order = document.getElementById('order');
+      const tbl = document.getElementById('tbl').querySelector('tbody');
+      const rows = Array.from(tbl.querySelectorAll('tr'));
+      const count = document.getElementById('count');
+      const btnExport = document.getElementById('btn-export');
+
+      function apply(){
+        const term = (q.value||'').toLowerCase().trim();
+        let filtered = rows.filter(r=>{
+          const txt = r.innerText.toLowerCase();
+          const show = !term || txt.includes(term);
+          r.style.display = show ? '' : 'none';
+          return show;
+        });
+
+        const by = order.value;
+        filtered.sort((a,b)=>{
+          if(by==='name'){
+            return a.dataset.name.localeCompare(b.dataset.name);
+          }else if(by==='val'){
+            return (+b.dataset.val) - (+a.dataset.val);
+          }else if(by==='gain'){
+            return (+b.dataset.gain) - (+a.dataset.gain);
+          }
+          return 0;
+        });
+
+        // reordenar en DOM
+        filtered.forEach(r=>tbl.appendChild(r));
+        count.textContent = `${filtered.length} inversiones`;
+      }
+
+      function exportCSV(){
+        const visible = Array.from(tbl.querySelectorAll('tr')).filter(r=>r.style.display!=='none');
+        const headers = ["Startup","Sector","Etapa","Monto","Participación","Valuación Est.","P/L","Estado"];
+        const lines = [headers.join(",")];
+        visible.forEach(r=>{
+          const tds = r.querySelectorAll('td');
+          lines.push([
+            tds[0].innerText.replace(/,/g,""),
+            tds[1].innerText,
+            tds[2].innerText,
+            tds[3].innerText.replace(/,/g,""),
+            tds[4].innerText,
+            tds[5].innerText.replace(/,/g,""),
+            tds[6].innerText.replace(/,/g,""),
+            tds[7].innerText
+          ].join(","));
+        });
+        const blob = new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8;"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'portafolio_demo.csv';
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(url);
+      }
+
+      q.addEventListener('input', apply);
+      order.addEventListener('change', apply);
+      btnExport.addEventListener('click', exportCSV);
+      apply();
+    })();
+  </script>
+</body>
+</html>

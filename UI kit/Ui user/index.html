@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Inversionista – ANEIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ====== Tokens (alineados con emprendedor) ====== */
+    :root{
+      --color-primary:#2563eb; --color-accent:#14b8a6; --color-institutional:#1e3a8a;
+      --color-text:#1f2937; --color-muted:#4b5563; --color-bg:#e5e7eb;
+      --color-white:#fff; --color-border:#d1d5db;
+      --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--color-text);background:var(--color-bg);line-height:1.6}
+    a{text-decoration:none;color:var(--color-primary)}
+    h1,h2{color:var(--color-institutional);margin-bottom:.75rem}
+
+    /* ====== Topbar manual ====== */
+    .topbar{position:fixed;top:0;left:0;right:0;height:56px;background:var(--color-white);
+      border-bottom:1px solid var(--color-border);box-shadow:var(--shadow-md);z-index:1000;
+      display:flex;align-items:center;justify-content:space-between;padding:0 .75rem}
+    .topbar-logo{font-weight:700;color:var(--color-institutional)}
+    .topbar-nav{display:flex;gap:1rem;align-items:center;overflow-x:auto}
+    .topbar-nav a{color:var(--color-text);padding:.35rem .5rem;border-radius:.4rem;white-space:nowrap;font-weight:600}
+    .topbar-nav a.active,.topbar-nav a[aria-current="page"]{background:var(--color-primary);color:#fff}
+    .topbar-actions{display:flex;gap:.5rem}
+    .icon-btn{width:2rem;height:2rem;border-radius:9999px;background:var(--color-bg);display:grid;place-items:center}
+    .avatar{background:var(--color-institutional);color:#fff}
+
+    /* ====== Sidebar manual ====== */
+    .sidebar{position:fixed;top:56px;left:0;width:224px;height:calc(100vh - 56px);background:var(--color-white);
+      border-right:1px solid var(--color-border);padding:1rem;overflow:auto;display:none}
+    .sidebar-nav{display:flex;flex-direction:column;gap:.25rem}
+    .sidebar-nav a{color:var(--color-text);padding:.5rem;border-radius:.5rem}
+    .sidebar-nav a.active{background:#eef2ff;color:#3730a3;font-weight:700}
+
+    /* ====== Layout contenido ====== */
+    .main{padding:5rem 1rem 4rem}
+    .grid{display:grid;gap:1.25rem;grid-template-columns:1fr}
+    .card{background:#fff;border:1px solid var(--color-border);border-radius:.75rem;box-shadow:var(--shadow-md);padding:1.25rem;border-left:5px solid var(--color-primary)}
+    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;font-weight:700}
+    .chip{background:var(--color-bg);border:1px solid var(--color-border);padding:.2rem .6rem;border-radius:9999px;font-size:.8rem;font-weight:600}
+    .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin:.5rem 0}
+    .kpi{background:#f9fafb;border:1px solid var(--color-border);border-radius:.5rem;padding:.75rem}
+    .kpi small{color:var(--color-muted)}
+    .kpi b{display:block;font-size:1.25rem;margin-top:.25rem}
+
+    .list{display:grid;gap:.5rem}
+    .item{display:flex;justify-content:space-between;gap:.5rem}
+    .muted{color:var(--color-muted);font-size:.9rem}
+
+    .btn{appearance:none;border:1px solid var(--color-border);background:#fff;border-radius:.5rem;padding:.55rem .9rem;font-weight:600;cursor:pointer}
+    .btn-primary {background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .btn-accent{background:var(--color-accent);color:#fff;border-color:var(--color-accent)}
+
+    /* ====== Bottom nav (móvil) ====== */
+    .bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:#fff;box-shadow:0 -4px 6px -1px rgba(0,0,0,.05);z-index:999;display:flex;justify-content:space-around;padding:.5rem 0}
+    .nav-item{text-align:center;font-size:.75rem;color:var(--color-text);padding:.25rem}
+    .nav-item.active{color:var(--color-primary);font-weight:700}
+    .nav-item-icon{font-size:1.25rem;display:block;margin-bottom:.2rem}
+
+    /* ====== Desktop ====== */
+    @media(min-width:768px){
+      .sidebar{display:block}
+      .main{padding:5rem 2rem 2rem calc(224px + 2rem)}
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .bottom-nav{display:none}
+    }
+    @media(min-width:1200px){ .grid{grid-template-columns:repeat(3,1fr)} }
+  </style>
+</head>
+<body>
+
+<!-- Topbar (único para TODAS las páginas del perfil inversionista) -->
+<header class="topbar" role="banner">
+  <div class="topbar-logo">
+    <a href="index.html" style="color:inherit">ANEIR</a>
+  </div>
+
+  <nav class="topbar-nav" aria-label="Principal">
+    <!-- Marca la página actual con class="active" -->
+    <a href="index.html" class="">Inicio</a>
+    <a href="marketplace.html" class="">Marketplace</a>
+    <a href="ayuda_faq.html" class="">Ayuda</a>
+  </nav>
+
+  <div class="topbar-actions">
+    <button class="icon-btn" aria-label="Notificaciones">🔔</button>
+    <!-- El avatar lleva al perfil; no hay item "Perfil" en el menú -->
+    <a class="icon-btn avatar" href="perfil.html" title="Perfil">A</a>
+  </div>
+</header>
+
+<!-- Sidebar (único para TODAS las páginas del perfil inversionista) -->
+<aside class="sidebar" aria-label="Secundaria">
+  <nav class="sidebar-nav">
+    <!-- Marca la página actual con class="active" -->
+    <a href="index.html" class="">Mi Panel</a>
+    <a href="marketplace.html" class="">Descubrir Startups</a>
+    <hr/>
+    <a href="ayuda_faq.html" class="">Ayuda / FAQ</a>
+  </nav>
+</aside>
+
+  <!-- Contenido -->
+  <main id="main" class="main" tabindex="-1">
+    <header style="margin-bottom:1rem">
+      <h1>¡Bienvenido, Alex! 👋</h1>
+      <p class="muted">Inversionista ángel · Tesis: B2B SaaS, FinTech y AgroTech · Tickets US$50k–200k</p>
+      <a href="./perfil.html" style="display:inline-block;margin-top:.3rem">Editar perfil de inversionista</a>
+    </header>
+
+    <section class="grid">
+      <!-- Portafolio snapshot -->
+      <article class="card" style="border-left-color:var(--color-accent)">
+        <div class="card-header">
+          <span>Resumen de Portafolio</span>
+          <span class="chip">Demo</span>
+        </div>
+        <div>
+          <div class="kpis">
+            <div class="kpi"><small>TVPI</small><b>1.42×</b></div>
+            <div class="kpi"><small>IRR (anualizado)</small><b>18.3%</b></div>
+            <div class="kpi"><small>Exits</small><b>1</b></div>
+            <div class="kpi"><small>Disponible para invertir</small><b>US$120k</b></div>
+          </div>
+          <hr style="margin:1rem 0;border-color:var(--color-bg)">
+          <a class="btn" href="portafolio.html">Ver portafolio completo</a>
+        </div>
+      </article>
+
+      <!-- Pipeline -->
+      <article class="card">
+        <div class="card-header">
+          <span>Pipeline de oportunidades</span>
+          <span class="chip">3 activas</span>
+        </div>
+        <div class="list">
+          <div class="item"><span><b>FinPay</b> · FinTech (Tracción)</span><span class="muted">Reunión DD 18 Oct</span></div>
+          <div class="item"><span><b>AgroIA</b> · AgroTech (MVP)</span><span class="muted">Solicitó intro</span></div>
+          <div class="item"><span><b>Salud+</b> · HealthTech (Idea)</span><span class="muted">En screening</span></div>
+          <hr style="margin:.5rem 0;border-color:var(--color-bg)">
+          <a class="btn btn-primary" href="./marketplace.html">Explorar startups</a>
+        </div>
+      </article>
+
+      <!-- Siguientes pasos -->
+      <article class="card">
+        <div class="card-header">
+          <span>Siguientes pasos (Activación)</span>
+          <span class="chip" style="background:var(--color-accent);color:#fff">60%</span>
+        </div>
+        <div>
+          <p class="item"><span><span style="display:inline-block;width:1rem;height:1rem;border:2px solid var(--color-accent);background:var(--color-accent);border-radius:3px;margin-right:.5rem"></span>Confirmar identidad (KYC/AML)</span><span class="muted">Hecho</span></p>
+          <p class="item"><span><span style="display:inline-block;width:1rem;height:1rem;border:2px solid var(--color-primary);border-radius:3px;margin-right:.5rem"></span>Definir preferencias (sector, ticket)</span><span class="muted">Pendiente</span></p>
+          <p class="item"><span><span style="display:inline-block;width:1rem;height:1rem;border:2px solid var(--color-primary);border-radius:3px;margin-right:.5rem"></span>Vincular cuenta para desembolsos (SPV/Fondo)</span><span class="muted">Pendiente</span></p>
+          <a class="btn btn-primary" style="margin-top:100px;" href="tramites.html">Completar activación</a>
+        </div>
+      </article>
+
+      <!-- Alertas -->
+      <article class="card">
+        <div class="card-header">
+          <span>Alertas</span>
+          <span class="chip">3</span>
+        </div>
+        <div class="list">
+          <div style="display:flex;gap:.6rem;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:.5rem;padding:.6rem .8rem">
+            <div style="width:.6rem;height:.6rem;border-radius:9999px;background:#16a34a;margin-top:.35rem"></div>
+            <div><b>Distribución recibida:</b> <span class="muted">US$8,400 de AgroIA</span></div>
+          </div>
+          <div style="display:flex;gap:.6rem;border:1px solid #bae6fd;background:#eff6ff;border-radius:.5rem;padding:.6rem .8rem">
+            <div style="width:.6rem;height:.6rem;border-radius:9999px;background:#2563eb;margin-top:.35rem"></div>
+            <div><b>Nueva oportunidad sugerida:</b> FinPay (IA Score 8/10)</div>
+          </div>
+          <div style="display:flex;gap:.6rem;border:1px solid #fed7aa;background:#fff7ed;border-radius:.5rem;padding:.6rem .8rem">
+            <div style="width:.6rem;height:.6rem;border-radius:9999px;background:#f59e0b;margin-top:.35rem"></div>
+            <div><b>Documentos de DD pendientes:</b> FinPay – Data Room</div>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem">
+            <button class="btn">Marcar todas como leídas</button>
+            <a href="reportes.html" style="align-self:center">Centro de notificaciones</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Agenda -->
+      <article class="card">
+        <div class="card-header">
+          <span>Agenda / Próximas reuniones</span>
+          <span class="chip">Esta semana</span>
+        </div>
+        <div class="list">
+          <div class="item"><span>18 Oct — Due Diligence con FinPay</span><span class="chip" style="background:#e0f2fe">30 min</span></div>
+          <div class="item"><span>20 Oct — Board update AgroIA</span><span class="chip" style="background:#dcfce7">Confirmada</span></div>
+          <hr style="margin:.5rem 0;border-color:var(--color-bg)">
+          <a href="reportes.html">Ver agenda completa</a>
+        </div>
+      </article>
+
+      <!-- Sugeridas IA -->
+      <article class="card">
+        <div class="card-header"><span>Startups sugeridas (IA)</span></div>
+        <div>
+          <p><b>AgroIA</b> — AgroTech · Ticket sugerido: US$100k</p>
+          <p><b>FinPay</b> — FinTech · Co-inversión disponible</p>
+          <hr style="margin:1rem 0;border-color:var(--color-bg)">
+          <a class="btn" href="./marketplace.html">Ver más</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Bottom nav (móvil) -->
+  <nav class="bottom-nav" aria-label="Navegación inferior">
+    <a href="./index.html" class="nav-item active"><span class="nav-item-icon">🏠</span>Inicio</a>
+    <a href="./marketplace.html" class="nav-item"><span class="nav-item-icon">🔍</span>Buscar</a>
+    <a href="reportes.html" class="nav-item"><span class="nav-item-icon">📊</span>Reportes</a>
+    <a href="portafolio.html" class="nav-item"><span class="nav-item-icon">💼</span>Portafolio</a>
+    <a href="./perfil.html" class="nav-item"><span class="nav-item-icon">👤</span>Perfil</a>
+  </nav>
+
+  <!-- JS mínimo: marcar activo en topbar y sidebar según archivo -->
+  <script>
+    (function(){
+      const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      document.querySelectorAll('.topbar-nav a, .sidebar-nav a').forEach(a=>{
+        const expected = (a.getAttribute('data-file') || '').toLowerCase();
+        const isActive = expected === file;
+        if(isActive){
+          a.classList.add('active');
+          if(a.closest('.topbar-nav')) a.setAttribute('aria-current','page');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
